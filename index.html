@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trình Tạo Ma Trận Sắc Màu - Giáo Viên</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f1f5f9;
+            color: #334155;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Lưới Vẽ / Canvas (Chế độ thiết kế) */
+        .pixel-cell {
+            border: 1px solid #e2e8f0;
+            transition: all 0.1s;
+            cursor: pointer;
+        }
+        .pixel-cell:hover { transform: scale(1.15); box-shadow: 0 0 5px rgba(0,0,0,0.2); border-color: #cbd5e1; z-index: 10; }
+
+        /* Lưới Chơi Web & Print */
+        .game-grid {
+            display: grid;
+            border: 2px solid #94a3b8;
+            background: #fff;
+        }
+        .game-cell {
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 900;
+            color: #1e293b;
+            text-transform: uppercase;
+            transition: background-color 0.3s;
+        }
+        
+        /* Nút Tùy chọn Đáp án */
+        .opt-btn {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 999px;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .opt-btn:hover { border-color: #cbd5e1; background: #f8fafc; }
+        .opt-btn.selected { border-color: #3b82f6; background: #eff6ff; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+        
+        .letter-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ffedd5;
+            color: #ea580c;
+            font-weight: 900;
+            margin-right: 10px;
+            font-size: 13px;
+        }
+
+        /* --- CẤU HÌNH IN ẤN (PDF) CHUYÊN NGHIỆP --- */
+        @media print {
+            @page { size: A4 landscape; margin: 8mm; }
+            body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .no-print { display: none !important; }
+            .print-container { display: flex !important; width: 100%; height: 100%; gap: 20px; font-family: 'Nunito', sans-serif; }
+            
+            /* Box Cột Trái */
+            .print-col-left { 
+                width: 42%; 
+                display: flex; 
+                flex-direction: column; 
+                border: 3px solid #fef08a; /* Khung vàng nhạt */
+                border-radius: 16px;
+                padding: 15px;
+                background: #fff;
+            }
+            .print-header-left {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+            }
+            .print-title { font-size: 20px; font-weight: 900; color: #ef4444; text-transform: uppercase; }
+            
+            .student-info-box {
+                border: 2px dashed #fcd34d;
+                border-radius: 12px;
+                padding: 10px 15px;
+                margin-bottom: 15px;
+                background: #fffbeb;
+            }
+            
+            .game-grid { border: 2px solid #cbd5e1; width: 100%; aspect-ratio: 1/1; max-width: 380px; margin: 0 auto;}
+            .game-cell { border: 1px solid #e2e8f0; font-size: 11px; color: #000; font-weight: 800;}
+            
+            /* Bảng Mật Mã Dưới Cùng */
+            .print-legend {
+                margin-top: 15px;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 12px;
+                font-size: 12px;
+                font-weight: 800;
+            }
+            .legend-item { display: flex; align-items: center; gap: 4px; }
+            .legend-color { width: 14px; height: 14px; border-radius: 50%; border: 1px solid #000; }
+
+            /* Box Cột Phải */
+            .print-col-right { width: 58%; display: flex; flex-direction: column; }
+            .print-lesson-title {
+                background: #eff6ff;
+                color: #1e3a8a;
+                padding: 12px 20px;
+                border-radius: 12px;
+                font-weight: 900;
+                font-size: 18px;
+                margin-bottom: 15px;
+                text-transform: uppercase;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .print-q-box { 
+                margin-bottom: 12px; 
+                page-break-inside: avoid;
+                border-bottom: 1px dashed #e2e8f0;
+                padding-bottom: 10px;
+            }
+            .print-q-text { font-weight: 800; font-size: 14px; margin-bottom: 8px; color: #1e293b; }
+            .print-opt-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+            .print-opt { 
+                display: flex; 
+                align-items: center; 
+                font-size: 13px; 
+                font-weight: 700;
+                border: 1px solid #e2e8f0;
+                border-radius: 20px;
+                padding: 4px 10px;
+            }
+            .print-letter { 
+                color: #ea580c;
+                font-weight: 900;
+                margin-right: 6px;
+            }
+        }
+
+        .print-container { display: none; }
+
+        /* Toast */
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
+        .toast { background: #10b981; color: white; padding: 12px 24px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 10px; opacity: 0; transform: translateY(20px); transition: all 0.3s; font-weight: bold;}
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.error { background: #ef4444; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <header class="bg-white shadow-sm border-b border-slate-200 no-print sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <div class="bg-blue-600 p-2 rounded-xl text-white shadow-md"><i class="fas fa-th text-xl"></i></div>
+                    <h1 class="text-xl font-black text-slate-800 tracking-tight">MA TRẬN <span class="text-blue-600">SẮC MÀU</span></h1>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="switchTab('questions')" id="tab-questions" class="px-4 py-2 rounded-lg font-bold text-slate-600 hover:bg-slate-100 transition-colors">1. Nội dung</button>
+                    <button onclick="switchTab('image')" id="tab-image" class="px-4 py-2 rounded-lg font-bold text-slate-600 hover:bg-slate-100 transition-colors">2. Tranh Ẩn</button>
+                    <button onclick="switchTab('play')" id="tab-play" class="px-4 py-2 rounded-lg font-bold text-blue-700 bg-blue-50 border border-blue-200 transition-colors shadow-sm">3. Chơi & Xuất PDF</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-6 no-print">
+        
+        <!-- ================= TAB 1: NỘI DUNG & CÂU HỎI ================= -->
+        <div id="view-questions" class="block animate-fade-in">
+            <!-- Tên bài học -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 mb-6">
+                <label class="block text-sm font-black text-slate-700 mb-2 uppercase tracking-wide"><i class="fas fa-book-open text-blue-500 mr-2"></i>Tên bài học / Tiêu đề Phiếu bài tập</label>
+                <input type="text" id="lesson-title" class="w-full border-2 border-slate-200 rounded-xl p-3 focus:border-blue-500 outline-none font-bold text-slate-800 text-lg" placeholder="VD: BÀI 9. PROTEIN VÀ ENZYME" value="BÀI 9. PROTEIN VÀ ENZYME">
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Form -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h2 class="text-lg font-black mb-4 text-slate-800"><i class="fas fa-edit text-blue-500 mr-2"></i>Thêm/Sửa Câu Hỏi</h2>
+                        <input type="hidden" id="edit-id" value="-1">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Nội dung</label>
+                                <textarea id="q-text" rows="3" class="w-full border-2 border-slate-200 rounded-xl p-3 focus:border-blue-500 outline-none font-medium" placeholder="Nhập câu hỏi..."></textarea>
+                            </div>
+                            <div class="space-y-2">
+                                <div><input type="text" id="q-opt0" placeholder="Đáp án 1" class="w-full border-2 rounded-xl p-2.5 outline-none focus:border-blue-500 font-medium"></div>
+                                <div><input type="text" id="q-opt1" placeholder="Đáp án 2" class="w-full border-2 rounded-xl p-2.5 outline-none focus:border-blue-500 font-medium"></div>
+                                <div><input type="text" id="q-opt2" placeholder="Đáp án 3" class="w-full border-2 rounded-xl p-2.5 outline-none focus:border-blue-500 font-medium"></div>
+                                <div><input type="text" id="q-opt3" placeholder="Đáp án 4" class="w-full border-2 rounded-xl p-2.5 outline-none focus:border-blue-500 font-medium"></div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Đáp án đúng là:</label>
+                                <select id="q-correct" class="w-full border-2 border-slate-200 rounded-xl p-2.5 outline-none font-bold text-blue-600 bg-blue-50">
+                                    <option value="0">Đáp án 1</option><option value="1">Đáp án 2</option><option value="2">Đáp án 3</option><option value="3">Đáp án 4</option>
+                                </select>
+                            </div>
+                            <div class="flex gap-2 pt-2">
+                                <button onclick="saveQuestion()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 shadow-md transition-transform active:scale-95">Lưu Lại</button>
+                                <button onclick="resetForm()" class="px-4 bg-slate-100 text-slate-600 py-3 rounded-xl font-bold hover:bg-slate-200">Hủy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Danh sách -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 h-full flex flex-col">
+                        <div class="flex justify-between items-center mb-4 pb-2 border-b-2 border-slate-100">
+                            <h2 class="text-lg font-black text-slate-800">Danh sách câu hỏi (<span id="q-count">0</span>)</h2>
+                            <div class="text-xs text-amber-700 bg-amber-100 px-3 py-1.5 rounded-lg font-bold border border-amber-200">
+                                Cần số câu hỏi lớn hơn hoặc bằng số màu dùng trong tranh!
+                            </div>
+                        </div>
+                        <div id="questions-list" class="flex-1 overflow-y-auto pr-2 space-y-3 max-h-[600px] no-scrollbar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: VẼ HÌNH ẢNH (Bổ sung thư viện mới) ================= -->
+        <div id="view-image" class="hidden animate-fade-in">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-6">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                    <h2 class="text-xl font-black text-slate-800"><i class="fas fa-palette text-blue-500 mr-2"></i>Thiết Kế Tranh Ẩn (Đối Xứng)</h2>
+                    <div class="flex items-center gap-3">
+                        <select id="preset-selector" onchange="loadPreset(this.value)" class="border-2 border-slate-200 rounded-xl p-2.5 outline-none font-bold text-slate-700 bg-slate-50 cursor-pointer">
+                            <option value="custom">-- Vẽ Tự Do --</option>
+                            <optgroup label="🟢 Mức 5 Câu (5 Màu - Đối xứng)">
+                                <option value="butterfly">🦋 Bướm Hoàng Kim (5 màu)</option>
+                                <option value="chick">🐥 Gà Con Đáng Yêu (5 màu)</option>
+                                <option value="watermelon">🍉 Dưa Hấu Mát Lạnh (5 màu)</option>
+                                <option value="flask">⚗️ Bình Cầu Hóa Học (5 màu)</option>
+                            </optgroup>
+                            <optgroup label="🔵 Mức 7 Câu (7 Màu - Đối xứng)">
+                                <option value="owl">🦉 Cú Mèo Thông Thái (7 màu)</option>
+                                <option value="xmas">🎄 Cây Thông Giáng Sinh (7 màu)</option>
+                                <option value="trophy">🏆 Cúp Vàng Vinh Quang (7 màu)</option>
+                                <option value="mushroom">🍄 Nấm Thần Kỳ (7 màu)</option>
+                            </optgroup>
+                            <optgroup label="🟠 Mức 8 Câu (8 Màu - Đối xứng)">
+                                <option value="robot">🤖 Robot Trí Tuệ (8 màu)</option>
+                                <option value="rocket">🚀 Tên Lửa Vũ Trụ (8 màu)</option>
+                                <option value="halloween">🎃 Bí Ngô Phù Thủy (8 màu)</option>
+                                <option value="atom">⚛️ Nguyên Tử Hóa Học (8 màu)</option>
+                            </optgroup>
+                            <optgroup label="🔴 Mức 10 Câu (10 Màu - Đối xứng)">
+                                <option value="astronaut">👨‍🚀 Phi Hành Gia Vũ Trụ (10 màu)</option>
+                                <option value="crown">👑 Vương Miện Hoàng Gia (10 màu)</option>
+                                <option value="peacock">🦚 Chim Công Rực Rỡ (10 màu)</option>
+                                <option value="mandala_heart">💖 Trái Tim Pha Lê (10 màu)</option>
+                            </optgroup>
+                        </select>
+                        <button onclick="clearGrid()" class="px-4 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 font-bold"><i class="fas fa-trash-alt"></i> Xóa</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    <!-- Công cụ -->
+                    <div class="lg:col-span-1 space-y-6">
+                        <div class="flex gap-2">
+                            <button onclick="setTool('draw')" id="tool-draw" class="flex-1 py-3 bg-slate-800 text-white rounded-xl font-bold shadow-md"><i class="fas fa-pencil-alt mr-1"></i> Vẽ</button>
+                            <button onclick="setTool('erase')" id="tool-erase" class="flex-1 py-3 bg-white border-2 border-slate-200 text-slate-600 rounded-xl font-bold"><i class="fas fa-eraser mr-1"></i> Tẩy</button>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-black text-slate-700 text-sm uppercase">Màu đang dùng (<span id="color-count">0</span>)</h3>
+                                <button onclick="addCustomColor()" class="text-blue-600 hover:text-blue-800"><i class="fas fa-plus-circle text-lg"></i></button>
+                            </div>
+                            <div id="palette-container" class="flex flex-wrap gap-2"></div>
+                            <input type="color" id="color-picker" class="hidden" onchange="pushNewColor(this.value)">
+                        </div>
+                        <p class="text-xs text-slate-500 font-semibold italic text-center">Nền Trắng (#FFFFFF) mặc định không cần trả lời câu hỏi.</p>
+                    </div>
+
+                    <!-- Canvas -->
+                    <div class="lg:col-span-3 flex justify-center items-center bg-slate-100 p-6 rounded-2xl border-2 border-dashed border-slate-300">
+                        <div id="pixel-grid" class="grid bg-white shadow-lg cursor-crosshair select-none" style="grid-template-columns: repeat(20, minmax(0, 1fr)); width: 400px; height: 400px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: TRẢI NGHIỆM WEB & XUẤT PDF ================= -->
+        <div id="view-play" class="hidden animate-fade-in">
+            <!-- Cảnh báo nếu chưa đủ điều kiện -->
+            <div id="play-warning" class="hidden bg-red-50 border-2 border-red-200 p-6 rounded-2xl text-center mb-6">
+                <i class="fas fa-exclamation-triangle text-3xl text-red-500 mb-2"></i>
+                <h3 class="text-lg font-black text-red-700">Chưa đủ điều kiện!</h3>
+                <p class="text-red-600 font-medium" id="play-warning-msg">Bạn cần đảm bảo Số lượng Câu hỏi lớn hơn hoặc bằng Số Màu Sắc sử dụng trong tranh.</p>
+            </div>
+
+            <!-- Khu vực Game chính thức -->
+            <div id="play-content" class="hidden">
+                <div class="flex justify-between items-end mb-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-800">Chơi Thử & Xuất Bản</h2>
+                        <p class="text-sm text-slate-500 font-semibold">Trả lời câu hỏi, dò chữ cái trong bảng Mật Mã để tô màu.</p>
+                    </div>
+                    <button onclick="window.print()" class="px-6 py-3 bg-blue-600 text-white rounded-xl font-black shadow-lg hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-2">
+                        <i class="fas fa-file-pdf"></i> XUẤT FILE PDF
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                    
+                    <!-- Cột Trái: Lưới Mật Mã & Legend -->
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 flex flex-col items-center sticky top-24">
+                        <div class="w-full text-center mb-4">
+                            <h3 class="font-black text-lg text-slate-800 uppercase tracking-widest">Bảng Mật Mã</h3>
+                            <p class="text-xs font-bold text-amber-600 bg-amber-50 inline-block px-3 py-1 rounded-full border border-amber-200 mt-1">
+                                Tự động tô màu khi chọn đúng đáp án
+                            </p>
+                        </div>
+                        
+                        <!-- Lưới Chữ cái (Web Play) -->
+                        <div id="game-grid" class="game-grid w-full aspect-square max-w-[400px]" style="grid-template-columns: repeat(20, minmax(0, 1fr));"></div>
+                        
+                        <!-- Bảng Legend (Chú giải màu) -->
+                        <div class="w-full mt-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                            <h4 class="text-sm font-black text-center mb-3 text-slate-700">CHÚ GIẢI MÀU SẮC (LEGEND)</h4>
+                            <div id="web-legend" class="flex flex-wrap justify-center gap-3"></div>
+                        </div>
+                        
+                        <button onclick="generateGameData()" class="mt-4 text-sm font-bold text-slate-500 hover:text-slate-800 underline">
+                            <i class="fas fa-random mr-1"></i> Trộn lại mã chữ cái
+                        </button>
+                    </div>
+
+                    <!-- Cột Phải: Danh sách Câu hỏi tương tác -->
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                        <h3 class="font-black text-lg text-blue-800 mb-4 border-b-2 border-blue-100 pb-2" id="web-lesson-title">BÀI 9. PROTEIN VÀ ENZYME</h3>
+                        <div id="play-questions-list" class="space-y-6">
+                            <!-- Render via JS -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ================= LAYOUT IN PDF (A4 Ngang) ================= -->
+    <div class="print-container">
+        <!-- Cột Trái (Khoảng 42%): Lưới & Bảng Màu -->
+        <div class="print-col-left">
+            <div class="print-header-left">
+                <div class="print-title">Ma Trận Tô Màu</div>
+            </div>
+            
+            <div class="student-info-box">
+                <div style="display: flex; gap: 10px; margin-bottom: 8px; font-size: 14px; font-weight: 800;">
+                    <div style="flex: 1; border-bottom: 2px dotted #94a3b8; padding-bottom: 2px;">🌸 Họ và tên:</div>
+                    <div style="width: 120px; border-bottom: 2px dotted #94a3b8; padding-bottom: 2px;">⭐ Lớp:</div>
+                </div>
+                <div style="font-size: 14px; font-weight: 800; border-bottom: 2px dotted #94a3b8; padding-bottom: 2px;">Thông điệp:</div>
+            </div>
+
+            <div style="text-align: center; font-weight: 900; font-size: 14px; margin-bottom: 8px; color: #1e40af; text-transform: uppercase;">
+                Bảng Mật Mã - Tô Màu Theo Đáp Án Đúng
+            </div>
+            
+            <!-- Lưới In -->
+            <div id="print-grid" class="game-grid"></div>
+            
+            <!-- Legend In -->
+            <div id="print-legend" class="print-legend">
+                <!-- Render qua JS: [Ký tự] - [Ô Màu] -->
+            </div>
+        </div>
+
+        <!-- Cột Phải (Khoảng 58%): Tên bài & Câu hỏi -->
+        <div class="print-col-right">
+            <div id="print-lesson-title" class="print-lesson-title">
+                <span>BÀI TẬP</span>
+                <span style="font-size: 12px; font-weight: 700; color: #3b82f6; background: #fff; padding: 2px 8px; border-radius: 20px; border: 1px solid #bfdbfe;">0/10 đúng</span>
+            </div>
+            <!-- Chia 1 cột rộng, các đáp án dàn 2 cột -->
+            <div id="print-questions-list">
+                <!-- Render qua JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast-container"></div>
+
+    <script>
+        // --- STREAMING_CHUNK: State & Data Initialization ---
+        let questions = [
+            { id: 1, text: "Hợp chất nào sau đây thuộc loại protein?", options: ["Saccharose", "Triglyceride", "Albumin", "Cellulose"], correct: 2 },
+            { id: 2, text: "Protein nào sau đây không phải là protein dạng sợi?", options: ["Amylase", "Collagen", "Fibroin", "Keratin"], correct: 0 },
+            { id: 3, text: "Chất cơ sở để hình thành nên các phân tử protein đơn giản là", options: ["α-amino acid", "acid béo", "các loại đường", "tinh bột"], correct: 0 },
+            { id: 4, text: "Protein là hợp chất cao phân tử được hình thành từ một hay nhiều chuỗi", options: ["amylopectin", "polypropylene", "polysaccharide", "polypeptide"], correct: 3 },
+            { id: 5, text: "Phản ứng giữa albumin với Cu(OH)2 trong môi trường kiềm tạo màu:", options: ["Tím", "Xanh lam", "Đỏ gạch", "Vàng"], correct: 0 },
+            { id: 6, text: "Hiện tượng 'gạch cua' nổi lên khi nấu canh cua là do:", options: ["Sự đông tụ protein", "Sự đông tụ lipid", "Sự thủy phân", "Sự lên men"], correct: 0 },
+            { id: 7, text: "Enzyme có bản chất là hợp chất nào sau đây?", options: ["Carbohydrate", "Lipid", "Protein", "Nucleic acid"], correct: 2 },
+            { id: 8, text: "Chức năng chính của enzyme trong cơ thể là gì?", options: ["Cung cấp năng lượng", "Xúc tác sinh học", "Bảo vệ cơ thể", "Lưu trữ thông tin"], correct: 1 },
+            { id: 9, text: "Liên kết hóa học chính cấu tạo nên chuỗi polypeptide là:", options: ["Liên kết hydrogen", "Liên kết ion", "Liên kết peptide", "Liên kết disulfide"], correct: 2 },
+            { id: 10, text: "Hemoglobin trong hồng cầu có chức năng chính là:", options: ["Vận chuyển oxy", "Đông máu", "Bảo vệ cơ thể", "Xúc tác phản ứng"], correct: 0 }
+        ];
+        
+        const GRID_SIZE = 20;
+        let gridData = Array(GRID_SIZE * GRID_SIZE).fill('#FFFFFF'); 
+        let palette = ['#FFFFFF', '#000000', '#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#ec4899']; 
+        let activeColor = '#000000';
+        let currentTool = 'draw';
+        let isDrawing = false;
+
+        // Trạng thái Game
+        let gameConfig = {
+            colorsUsed: [], 
+            colorToQuestionMap: {}, 
+            questionData: [], // { qIndex, correctLetter, options: [{text, letter, isCorrect}] }
+            letterGrid: [], // Mảng 400 phần tử (A-Z)
+            studentAnswers: {} // qIndex -> selectedOptionIndex
+        };
+
+        // Hàm tạo lưới đối xứng gương ngang (nhận 20 hàng, mỗi hàng 10 cột trái -> tự động đối xứng sang 10 cột phải)
+        function createSymmetricalGrid(halfRows) {
+            const fullData = [];
+            for (let r = 0; r < 20; r++) {
+                const leftHalf = halfRows[r] || [0,0,0,0,0,0,0,0,0,0];
+                const rightHalf = [...leftHalf].reverse();
+                fullData.push(...leftHalf, ...rightHalf);
+            }
+            return fullData;
+        }
+
+        const PRESETS = {
+            // ================= MỨC 5 CÂU (5 MÀU) =================
+            'butterfly': { 
+                colors: ['#FFFFFF', '#1E293B', '#FDE047', '#F97316', '#EC4899', '#06B6D4'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,1,0,0],
+                    [0,1,1,1,1,0,0,0,1,0],
+                    [1,2,2,2,2,1,1,0,0,1],
+                    [1,2,3,3,2,2,2,1,0,1],
+                    [1,2,3,3,3,2,2,2,1,1],
+                    [1,3,3,4,4,3,3,2,1,1],
+                    [0,1,3,4,4,4,3,3,1,1],
+                    [0,1,4,4,4,4,4,3,1,1],
+                    [0,0,1,4,4,4,4,1,1,1],
+                    [0,0,0,1,1,1,1,1,1,1],
+                    [0,0,1,1,5,5,5,4,1,1],
+                    [0,1,5,5,5,4,4,4,1,1],
+                    [0,1,5,5,4,4,2,4,1,1],
+                    [0,1,5,5,5,2,2,5,1,1],
+                    [0,0,1,5,5,5,5,5,1,1],
+                    [0,0,1,3,5,5,5,1,0,1],
+                    [0,0,0,1,3,5,1,0,0,1],
+                    [0,0,0,0,1,1,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0]
+                ])
+            },
+            'chick': {
+                colors: ['#FFFFFF', '#451A03', '#FDE047', '#F97316', '#F472B6', '#38BDF8'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,1,1,1],
+                    [0,0,0,0,0,0,1,5,5,5],
+                    [0,0,0,0,0,1,5,5,5,5],
+                    [0,0,0,0,1,1,1,1,1,1],
+                    [0,0,0,1,2,2,2,2,2,2],
+                    [0,0,0,1,2,1,1,2,2,2],
+                    [0,0,0,1,2,1,1,2,3,3],
+                    [0,0,0,1,4,4,2,2,3,3],
+                    [0,0,0,0,1,2,2,2,2,2],
+                    [0,1,1,1,1,2,2,5,5,5],
+                    [1,2,2,2,1,2,5,5,4,4],
+                    [1,2,2,2,1,2,2,5,5,5],
+                    [0,1,1,1,1,2,2,2,2,2],
+                    [0,0,0,0,1,2,2,2,2,2],
+                    [0,0,0,0,0,1,2,2,2,2],
+                    [0,0,0,0,0,0,1,1,1,1],
+                    [0,0,0,0,0,0,1,3,1,0],
+                    [0,0,0,0,0,1,3,3,3,1],
+                    [0,0,0,0,0,1,1,1,1,1],
+                    [0,0,0,0,0,0,0,0,0,0]
+                ])
+            },
+            'watermelon': {
+                colors: ['#FFFFFF', '#1E293B', '#EF4444', '#FCA5A5', '#22C55E', '#15803D'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,1],
+                    [0,0,0,0,0,0,0,0,1,2],
+                    [0,0,0,0,0,0,0,1,2,2],
+                    [0,0,0,0,0,0,1,2,1,2],
+                    [0,0,0,0,0,1,2,2,2,2],
+                    [0,0,0,0,1,2,1,2,2,1],
+                    [0,0,0,1,2,2,2,2,2,2],
+                    [0,0,1,2,2,1,2,2,1,2],
+                    [0,1,2,2,2,2,2,2,2,2],
+                    [1,2,2,1,2,2,1,2,2,2],
+                    [1,2,2,2,2,2,2,2,2,2],
+                    [1,3,3,3,3,3,3,3,3,3],
+                    [1,4,4,4,4,4,4,4,4,4],
+                    [0,1,5,4,4,5,5,4,4,5],
+                    [0,0,1,5,5,5,5,5,5,5],
+                    [0,0,0,1,1,1,1,1,1,1],
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0]
+                ])
+            },
+            'flask': {
+                colors: ['#FFFFFF', '#1E293B', '#10B981', '#6EE7B7', '#3B82F6', '#F59E0B'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,1,1,1],
+                    [0,0,0,0,0,0,0,1,5,5],
+                    [0,0,0,0,0,0,1,1,5,5],
+                    [0,0,0,0,0,0,1,4,4,4],
+                    [0,0,0,0,0,0,0,1,4,4],
+                    [0,0,0,0,0,0,0,1,4,3],
+                    [0,0,0,0,0,0,0,1,4,4],
+                    [0,0,0,0,0,0,1,4,3,4],
+                    [0,0,0,0,0,1,4,4,4,4],
+                    [0,0,0,0,1,4,4,3,3,4],
+                    [0,0,0,1,2,2,2,2,2,2],
+                    [0,0,1,2,2,3,3,2,2,2],
+                    [0,0,1,2,3,3,2,2,3,2],
+                    [0,0,1,2,2,2,2,2,2,2],
+                    [0,0,1,2,2,2,3,2,2,2],
+                    [0,0,1,2,2,2,2,2,2,2],
+                    [0,0,0,1,2,2,2,2,2,2],
+                    [0,0,0,0,1,2,2,2,2,2],
+                    [0,0,0,0,0,1,1,1,1,1],
+                    [0,0,0,0,0,0,0,0,0,0]
+                ])
+            },
+
+            // ================= MỨC 7 CÂU (7 MÀU) =================
+            'owl': {
+                colors: ['#FFFFFF', '#1E293B', '#78350F', '#B45309', '#FDE047', '#F97316', '#FEF08A', '#38BDF8'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,1,1,1,1,1],
+                    [0,0,0,1,1,7,7,7,7,7],
+                    [0,0,0,0,1,1,7,7,7,7],
+                    [0,0,1,1,2,2,1,1,1,1],
+                    [0,0,1,2,2,3,3,2,2,2],
+                    [0,0,1,2,1,1,1,1,2,2],
+                    [0,0,1,1,4,4,4,4,1,2],
+                    [0,0,1,1,4,1,1,4,1,3],
+                    [0,0,1,1,4,4,4,4,1,5],
+                    [0,0,1,2,1,1,1,1,5,5],
+                    [0,1,2,2,3,3,6,6,5,6],
+                    [0,1,2,2,3,6,6,2,6,6],
+                    [0,1,2,2,3,6,6,6,6,2],
+                    [0,1,2,2,3,6,2,6,6,6],
+                    [0,0,1,2,3,3,6,6,6,6],
+                    [0,0,1,1,3,3,3,6,6,3],
+                    [0,0,0,0,1,1,1,1,1,1],
+                    [0,0,0,0,0,1,5,5,1,0],
+                    [0,0,0,0,1,5,5,5,5,1],
+                    [0,0,0,0,0,0,0,0,0,0]
+                ])
+            },
+            'xmas': {
+                colors: ['#FFFFFF', '#1E293B', '#15803D', '#22C55E', '#EF4444', '#FDE047', '#3B82F6', '#78350F'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,0,0,1],
+                    [0,0,0,0,0,0,0,0,1,5],
+                    [0,0,0,0,0,0,0,1,5,5],
+                    [0,0,0,0,0,0,0,0,1,5],
+                    [0,0,0,0,0,0,0,0,1,3],
+                    [0,0,0,0,0,0,0,1,3,3],
+                    [0,0,0,0,0,0,1,3,4,2],
+                    [0,0,0,0,0,1,2,2,2,2],
+                    [0,0,0,0,0,0,1,3,3,3],
+                    [0,0,0,0,0,1,3,3,5,3],
+                    [0,0,0,0,1,3,4,2,2,2],
+                    [0,0,0,1,2,2,2,2,6,2],
+                    [0,0,0,0,1,3,3,3,3,3],
+                    [0,0,0,1,3,3,6,3,3,4],
+                    [0,0,1,3,4,3,3,2,2,2],
+                    [0,1,2,2,2,5,2,2,2,2],
+                    [0,1,1,1,1,1,1,1,7,7],
+                    [0,0,1,6,6,4,1,1,7,7],
+                    [0,0,1,6,4,4,1,1,7,7],
+                    [0,0,1,1,1,1,1,1,1,1]
+                ])
+            },
+            'trophy': {
+                colors: ['#FFFFFF', '#1E293B', '#FACC15', '#EAB308', '#EA580C', '#EF4444', '#3B82F6', '#78350F'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,1,1,1,1,1,1,1],
+                    [0,1,1,4,4,2,2,2,2,2],
+                    [1,6,1,3,2,2,2,5,5,2],
+                    [1,6,1,3,2,2,5,5,5,5],
+                    [1,6,1,3,2,2,2,5,5,2],
+                    [0,1,1,3,3,2,2,2,2,2],
+                    [0,0,0,1,3,3,2,2,2,2],
+                    [0,0,0,0,1,3,3,2,2,3],
+                    [0,0,0,0,0,1,3,3,3,3],
+                    [0,0,0,0,0,0,1,4,4,4],
+                    [0,0,0,0,0,0,0,1,3,2],
+                    [0,0,0,0,0,0,0,1,3,2],
+                    [0,0,0,0,0,0,1,4,4,4],
+                    [0,0,0,0,1,1,7,7,7,7],
+                    [0,0,0,1,7,7,7,2,2,2],
+                    [0,0,0,1,7,7,7,2,5,2],
+                    [0,0,1,7,7,7,7,7,7,7],
+                    [0,0,1,1,1,1,1,1,1,1],
+                    [0,0,0,0,0,0,0,0,0,0]
+                ])
+            },
+            'mushroom': {
+                colors: ['#FFFFFF', '#1E293B', '#EF4444', '#FCA5A5', '#FDE047', '#FDBA74', '#22C55E', '#38BDF8'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,1,1,1,1,1],
+                    [0,0,0,1,1,2,2,2,3,3],
+                    [0,0,1,2,2,2,2,3,3,3],
+                    [0,1,2,3,3,2,2,2,3,3],
+                    [0,1,3,3,3,3,2,2,2,2],
+                    [1,2,3,3,3,3,2,2,4,4],
+                    [1,2,2,3,3,2,2,4,4,4],
+                    [1,2,2,2,2,2,2,2,4,4],
+                    [1,2,2,3,3,2,2,2,2,2],
+                    [0,1,1,1,1,1,1,1,1,1],
+                    [0,0,0,0,1,5,5,5,5,5],
+                    [0,0,0,0,1,5,5,1,7,5],
+                    [0,0,0,0,1,5,5,1,1,5],
+                    [0,0,0,0,1,5,3,5,5,5],
+                    [0,0,0,1,5,5,5,5,5,5],
+                    [0,0,1,6,1,5,5,5,5,5],
+                    [0,1,6,6,6,1,6,1,6,6],
+                    [0,1,1,1,1,1,1,1,1,1],
+                    [0,0,0,0,0,0,0,0,0,0]
+                ])
+            },
+
+            // ================= MỨC 8 CÂU (8 MÀU) =================
+            'robot': {
+                colors: ['#FFFFFF', '#1E293B', '#64748B', '#94A3B8', '#38BDF8', '#EF4444', '#FACC15', '#22C55E', '#A855F7'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,0,1,1],
+                    [0,0,0,0,0,0,0,1,5,5],
+                    [0,0,0,0,0,0,0,0,1,2],
+                    [0,0,0,1,1,1,1,1,1,1],
+                    [0,0,1,3,3,3,3,3,3,3],
+                    [0,1,5,1,3,1,1,1,1,1],
+                    [0,1,5,1,3,1,4,6,6,4],
+                    [0,1,5,1,3,1,4,6,6,4],
+                    [0,0,1,3,3,1,1,1,1,1],
+                    [0,0,1,2,2,1,6,1,6,1],
+                    [0,0,0,1,1,1,1,1,1,1],
+                    [0,0,1,2,2,3,3,3,3,3],
+                    [0,1,2,1,3,3,1,1,1,1],
+                    [0,1,2,1,3,1,8,8,8,8],
+                    [0,1,2,1,3,1,7,7,5,5],
+                    [0,1,1,1,3,3,1,1,1,1],
+                    [0,0,0,1,2,2,2,2,2,2],
+                    [0,0,0,0,1,2,2,1,1,0],
+                    [0,0,0,0,1,5,5,1,0,0],
+                    [0,0,0,0,1,1,1,1,0,0]
+                ])
+            },
+            'rocket': {
+                colors: ['#FFFFFF', '#1E293B', '#E2E8F0', '#94A3B8', '#EF4444', '#38BDF8', '#1D4ED8', '#F97316', '#FDE047'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,0,0,1],
+                    [0,0,0,0,0,0,0,0,1,4],
+                    [0,0,0,0,0,0,0,1,4,4],
+                    [0,0,0,0,0,0,1,4,4,4],
+                    [0,0,0,0,0,0,1,1,1,1],
+                    [0,0,0,0,0,1,3,2,2,2],
+                    [0,0,0,0,0,1,3,2,6,6],
+                    [0,0,0,0,0,1,3,6,5,5],
+                    [0,0,0,0,0,1,3,6,5,5],
+                    [0,0,0,0,0,1,3,2,6,6],
+                    [0,0,0,0,1,4,1,3,2,2],
+                    [0,0,0,1,4,4,1,3,2,2],
+                    [0,0,1,4,4,4,1,3,3,2],
+                    [0,0,1,4,4,1,1,3,4,4],
+                    [0,0,1,4,1,0,0,1,1,1],
+                    [0,0,1,1,0,0,0,1,7,8],
+                    [0,0,0,0,0,0,1,7,7,8],
+                    [0,0,0,0,0,0,1,7,8,8],
+                    [0,0,0,0,0,0,0,1,7,8],
+                    [0,0,0,0,0,0,0,0,1,1]
+                ])
+            },
+            'halloween': {
+                colors: ['#FFFFFF', '#1E293B', '#F97316', '#EA580C', '#FDE047', '#22C55E', '#A855F7', '#78350F', '#EC4899'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,0,1,1],
+                    [0,0,0,0,0,0,0,1,6,6],
+                    [0,0,0,0,0,0,1,6,6,6],
+                    [0,0,0,0,0,1,6,6,6,6],
+                    [0,0,0,0,1,7,7,7,8,8],
+                    [0,0,1,1,6,6,6,6,6,6],
+                    [0,0,0,1,1,1,1,5,5,1],
+                    [0,0,1,3,2,2,2,1,5,5],
+                    [0,1,3,2,2,2,3,2,2,2],
+                    [0,1,3,2,1,1,3,2,2,3],
+                    [1,3,2,1,4,4,1,2,2,3],
+                    [1,3,2,1,4,4,1,2,1,4],
+                    [1,3,8,8,1,1,2,2,1,4],
+                    [1,3,2,2,2,3,2,2,2,3],
+                    [1,3,2,1,4,1,4,1,4,4],
+                    [0,1,3,2,1,4,4,4,4,1],
+                    [0,1,3,3,2,1,1,1,1,2],
+                    [0,0,1,3,3,2,2,3,2,2],
+                    [0,0,0,1,1,1,1,1,1,1],
+                    [0,0,0,0,0,0,0,0,0,0]
+                ])
+            },
+            'atom': {
+                colors: ['#FFFFFF', '#1E293B', '#EF4444', '#3B82F6', '#FACC15', '#10B981', '#A855F7', '#F97316', '#06B6D4'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,1,1,0],
+                    [0,0,0,0,0,0,1,4,4,1],
+                    [0,0,1,1,0,0,1,4,4,1],
+                    [0,1,5,5,1,0,0,1,3,1],
+                    [0,1,5,5,3,1,0,1,8,1],
+                    [0,0,1,3,8,3,1,1,8,1],
+                    [0,0,0,1,8,8,1,6,6,1],
+                    [0,0,1,6,1,1,6,1,1,1],
+                    [0,1,6,1,0,0,1,2,2,7],
+                    [1,4,1,0,0,0,1,2,7,7],
+                    [1,4,1,0,0,0,1,7,2,2],
+                    [0,1,6,1,0,0,1,7,2,2],
+                    [0,0,1,6,1,1,6,1,1,1],
+                    [0,0,0,1,8,8,1,6,6,1],
+                    [0,0,1,3,8,3,1,1,8,1],
+                    [0,1,5,5,3,1,0,1,8,1],
+                    [0,1,5,5,1,0,0,1,3,1],
+                    [0,0,1,1,0,0,1,4,4,1],
+                    [0,0,0,0,0,0,1,4,4,1],
+                    [0,0,0,0,0,0,0,1,1,0]
+                ])
+            },
+
+            // ================= MỨC 10 CÂU (10 MÀU) =================
+            'astronaut': {
+                colors: ['#FFFFFF', '#1E293B', '#E2E8F0', '#94A3B8', '#38BDF8', '#1E3A8A', '#EF4444', '#F97316', '#FDE047', '#A855F7', '#10B981'],
+                data: createSymmetricalGrid([
+                    [0,8,0,0,0,0,1,1,1,1],
+                    [8,9,8,0,0,1,2,2,2,2],
+                    [0,8,0,0,1,2,2,2,6,6],
+                    [0,0,0,1,2,2,1,1,1,1],
+                    [0,0,0,1,2,1,5,5,4,4],
+                    [0,0,1,3,2,1,5,5,5,4],
+                    [0,0,1,3,2,1,5,5,5,5],
+                    [0,0,0,1,2,1,1,1,1,1],
+                    [0,0,0,0,1,2,2,3,3,2],
+                    [0,0,0,1,1,1,1,1,1,1],
+                    [0,0,1,2,2,1,2,6,10,2],
+                    [0,1,2,3,1,2,2,9,9,2],
+                    [0,1,3,3,1,2,2,2,2,2],
+                    [0,1,1,1,0,1,3,3,3,3],
+                    [0,0,0,0,0,1,2,2,1,1],
+                    [0,0,0,0,0,1,3,3,1,0],
+                    [0,0,0,0,0,1,6,6,1,0],
+                    [0,0,0,0,1,7,7,8,7,1],
+                    [0,0,0,0,1,7,8,8,7,1],
+                    [0,0,0,0,0,1,1,1,1,0]
+                ])
+            },
+            'crown': {
+                colors: ['#FFFFFF', '#1E293B', '#FACC15', '#EAB308', '#F97316', '#EF4444', '#EC4899', '#A855F7', '#3B82F6', '#06B6D4', '#10B981'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,0,0,1],
+                    [0,0,0,0,0,0,0,0,1,9],
+                    [0,1,1,0,0,1,1,0,1,9],
+                    [1,5,5,1,1,8,8,1,1,2],
+                    [1,5,5,1,1,8,8,1,2,2],
+                    [0,1,2,1,0,1,2,1,2,6],
+                    [0,1,2,2,1,2,2,1,6,6],
+                    [0,1,3,2,2,2,3,2,6,6],
+                    [0,1,3,10,2,2,7,7,2,2],
+                    [0,0,1,10,10,2,7,7,2,3],
+                    [0,0,1,3,2,2,2,2,3,3],
+                    [0,0,1,4,4,4,4,4,4,4],
+                    [0,0,1,1,1,1,1,1,1,1],
+                    [0,0,1,5,5,6,6,7,7,8],
+                    [0,0,1,5,5,6,6,7,7,8],
+                    [0,0,1,1,1,1,1,1,1,1],
+                    [0,0,1,3,4,2,10,9,2,4],
+                    [0,0,0,1,1,1,1,1,1,1],
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0]
+                ])
+            },
+            'peacock': {
+                colors: ['#FFFFFF', '#1E293B', '#1D4ED8', '#38BDF8', '#10B981', '#15803D', '#FACC15', '#F97316', '#EF4444', '#A855F7', '#EC4899'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,1,6,1,6],
+                    [0,0,0,0,1,1,5,5,1,1],
+                    [0,0,0,1,5,6,7,5,4,4],
+                    [0,0,1,5,6,8,8,6,4,9],
+                    [0,1,5,4,6,8,8,6,1,1],
+                    [0,1,4,9,10,6,6,1,2,2],
+                    [1,5,4,9,10,10,4,1,2,1],
+                    [1,6,7,4,9,4,4,1,2,7],
+                    [1,8,8,7,4,5,5,1,3,3],
+                    [1,6,7,4,5,6,7,1,3,2],
+                    [1,5,4,5,6,8,8,1,2,2],
+                    [0,1,5,4,4,6,6,1,2,2],
+                    [0,1,4,9,10,4,1,2,3,2],
+                    [0,0,1,9,10,4,1,2,3,3],
+                    [0,0,0,1,4,5,1,2,2,2],
+                    [0,0,0,0,1,1,0,1,2,2],
+                    [0,0,0,0,0,0,0,0,1,1],
+                    [0,0,0,0,0,0,0,0,1,7],
+                    [0,0,0,0,0,0,0,1,7,7],
+                    [0,0,0,0,0,0,0,0,0,0]
+                ])
+            },
+            'mandala_heart': {
+                colors: ['#FFFFFF', '#1E293B', '#EF4444', '#F43F5E', '#EC4899', '#F472B6', '#A855F7', '#38BDF8', '#FACC15', '#F97316', '#10B981'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,1,1,1,1,0,0,0],
+                    [0,0,1,2,2,2,2,1,0,0],
+                    [0,1,2,3,3,3,3,2,1,0],
+                    [1,2,3,4,4,4,4,3,2,1],
+                    [1,2,3,4,5,5,5,4,3,2],
+                    [1,2,3,5,6,6,6,5,4,3],
+                    [1,2,4,5,6,7,7,6,5,4],
+                    [1,2,4,6,7,8,8,7,6,5],
+                    [0,1,3,5,7,8,9,8,7,6],
+                    [0,1,2,4,6,8,9,9,8,7],
+                    [0,0,1,3,5,7,9,10,9,8],
+                    [0,0,0,1,3,6,8,10,10,9],
+                    [0,0,0,0,1,4,7,9,10,10],
+                    [0,0,0,0,0,1,4,6,8,9],
+                    [0,0,0,0,0,0,1,3,5,6],
+                    [0,0,0,0,0,0,0,1,2,3],
+                    [0,0,0,0,0,0,0,0,1,2],
+                    [0,0,0,0,0,0,0,0,0,1],
+                    [0,0,0,0,0,0,0,0,0,0]
+                ])
+            }
+        };
+
+        function showToast(msg, isError=false) {
+            const container = document.getElementById('toast-container');
+            const t = document.createElement('div');
+            t.className = `toast ${isError ? 'error' : ''}`;
+            t.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-2"></i> ${msg}`;
+            container.appendChild(t);
+            setTimeout(() => t.classList.add('show'), 10);
+            setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3000);
+        }
+
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) {
+                let randId = Math.floor(Math.random() * curId);
+                curId -= 1;
+                let tmp = array[curId];
+                array[curId] = array[randId];
+                array[randId] = tmp;
+            }
+            return array;
+        }
+
+        const getColorName = (hex) => {
+            const h = hex.toUpperCase();
+            const map = {
+                '#000000': 'Đen', '#1F2937': 'Đen', '#111827': 'Đen', '#1E293B': 'Đen',
+                '#451A03': 'Nâu đậm', '#78350F': 'Nâu', '#B45309': 'Nâu sáng',
+                '#64748B': 'Xám đậm', '#94A3B8': 'Xám', '#CBD5E1': 'Xám bạc', '#E2E8F0': 'Xám sáng',
+                '#EF4444': 'Đỏ', '#DC2626': 'Đỏ đậm', '#F43F5E': 'Đỏ hồng',
+                '#F97316': 'Cam', '#EA580C': 'Cam đậm', '#F59E0B': 'Vàng cam',
+                '#FDE047': 'Vàng', '#FACC15': 'Vàng tươi', '#FBBF24': 'Vàng', '#EAB308': 'Vàng đậm',
+                '#FEF08A': 'Vàng kem', '#FDBA74': 'Kem cam',
+                '#10B981': 'Xanh lục', '#22C55E': 'Xanh lá', '#15803D': 'Lục đậm', '#166534': 'Lục đậm',
+                '#6EE7B7': 'Lục nhạt', '#34D399': 'Lục nhạt',
+                '#06B6D4': 'Xanh ngọc', '#5EEAD4': 'Ngọc nhạt',
+                '#38BDF8': 'Xanh lam', '#60A5FA': 'Xanh nhạt', '#93C5FD': 'Xanh nhạt',
+                '#3B82F6': 'Xanh dương', '#2563EB': 'Xanh dương', '#1D4ED8': 'Xanh đậm', '#1E3A8A': 'Xanh tím than',
+                '#8B5CF6': 'Tím', '#A855F7': 'Tím',
+                '#EC4899': 'Hồng đậm', '#F472B6': 'Hồng', '#FCA5A5': 'Hồng phấn', '#FBCFE8': 'Hồng nhạt'
+            };
+            return map[h] || 'Màu này';
+        };
+
+        function switchTab(tabId) {
+            ['view-questions', 'view-image', 'view-play'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            ['tab-questions', 'tab-image', 'tab-play'].forEach(id => {
+                document.getElementById(id).className = "px-4 py-2 rounded-lg font-bold text-slate-600 hover:bg-slate-100 transition-colors";
+            });
+
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+            if(tabId === 'questions') {
+                document.getElementById('tab-questions').className = "px-4 py-2 rounded-lg font-bold text-blue-700 bg-blue-50 border border-blue-200";
+            } else if (tabId === 'image') {
+                document.getElementById('tab-image').className = "px-4 py-2 rounded-lg font-bold text-blue-700 bg-blue-50 border border-blue-200";
+                renderPalette();
+            } else if (tabId === 'play') {
+                document.getElementById('tab-play').className = "px-4 py-2 rounded-lg font-bold text-blue-700 bg-blue-50 border border-blue-200 shadow-sm";
+                prepareGameMode();
+            }
+        }
+
+        // --- STREAMING_CHUNK: Quản lý Câu Hỏi ---
+        function renderQuestions() {
+            const list = document.getElementById('questions-list');
+            document.getElementById('q-count').innerText = questions.length;
+            list.innerHTML = '';
+            if (questions.length === 0) { list.innerHTML = `<div class="text-center text-slate-400 py-10 font-bold">Chưa có câu hỏi nào.</div>`; return; }
+
+            questions.forEach((q, index) => {
+                const optsHtml = q.options.map((opt, i) => 
+                    `<div class="px-2 py-1 ${i == q.correct ? 'bg-green-100 text-green-700 border-green-200' : 'bg-slate-50 text-slate-600 border-slate-200'} border rounded-md font-semibold text-sm">${opt}</div>`
+                ).join('');
+
+                list.innerHTML += `
+                    <div class="p-4 border-2 border-slate-100 rounded-xl hover:border-blue-200 bg-white transition-all group">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-black text-slate-800 text-sm">Câu ${index + 1}: <span class="font-bold text-slate-600">${q.text}</span></h4>
+                            <div class="flex gap-2">
+                                <button onclick="editQuestion(${q.id})" class="text-blue-500 hover:text-blue-700 bg-blue-50 p-1.5 rounded-lg"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteQuestion(${q.id})" class="text-red-500 hover:text-red-700 bg-red-50 p-1.5 rounded-lg"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mt-2">${optsHtml}</div>
+                    </div>`;
+            });
+        }
+
+        function saveQuestion() {
+            const idInput = document.getElementById('edit-id').value;
+            const text = document.getElementById('q-text').value.trim();
+            const opts = [
+                document.getElementById('q-opt0').value.trim(),
+                document.getElementById('q-opt1').value.trim(),
+                document.getElementById('q-opt2').value.trim(),
+                document.getElementById('q-opt3').value.trim()
+            ];
+            const correct = parseInt(document.getElementById('q-correct').value);
+
+            if(!text || opts.includes("")) { showToast("Vui lòng điền đủ câu hỏi và 4 đáp án!", true); return; }
+
+            const newQ = { id: idInput == "-1" ? Date.now() : parseInt(idInput), text, options: opts, correct };
+            if (idInput == "-1") { questions.push(newQ); showToast("Đã thêm câu hỏi!"); } 
+            else { const idx = questions.findIndex(q => q.id === newQ.id); if(idx !== -1) questions[idx] = newQ; showToast("Cập nhật thành công!"); }
+            resetForm(); renderQuestions();
+        }
+
+        function editQuestion(id) {
+            const q = questions.find(q => q.id === id); if(!q) return;
+            document.getElementById('edit-id').value = q.id; document.getElementById('q-text').value = q.text;
+            document.getElementById('q-opt0').value = q.options[0]; document.getElementById('q-opt1').value = q.options[1];
+            document.getElementById('q-opt2').value = q.options[2]; document.getElementById('q-opt3').value = q.options[3];
+            document.getElementById('q-correct').value = q.correct;
+        }
+        function deleteQuestion(id) {
+            questions = questions.filter(q => q.id !== id);
+            renderQuestions();
+            showToast("Đã xóa câu hỏi!");
+        }
+        function resetForm() { document.getElementById('edit-id').value = "-1"; document.getElementById('q-text').value = ""; [0,1,2,3].forEach(i => document.getElementById(`q-opt${i}`).value = ""); document.getElementById('q-correct').value = "0"; }
+
+        function getActiveColors() {
+            const used = new Set();
+            gridData.forEach(c => { const upperC = c.toUpperCase(); if (upperC !== '#FFFFFF' && upperC !== '#FFF') used.add(upperC); });
+            return Array.from(used);
+        }
+
+        function initGrid() {
+            const gridEl = document.getElementById('pixel-grid');
+            gridEl.innerHTML = '';
+            for (let i = 0; i < 400; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'pixel-cell bg-white';
+                cell.style.backgroundColor = gridData[i];
+                cell.dataset.index = i;
+                
+                cell.addEventListener('mousedown', (e) => { isDrawing = true; applyColor(i, cell); e.preventDefault(); });
+                cell.addEventListener('mouseenter', () => { if (isDrawing) applyColor(i, cell); });
+                gridEl.appendChild(cell);
+            }
+            document.addEventListener('mouseup', () => { if(isDrawing) { isDrawing = false; updatePaletteStatus(); } });
+            renderPalette();
+        }
+
+        function applyColor(index, cellEl) {
+            const colorToApply = currentTool === 'draw' ? activeColor : '#FFFFFF';
+            gridData[index] = colorToApply;
+            cellEl.style.backgroundColor = colorToApply;
+            gameConfig.colorsUsed = []; // Đánh dấu cần tạo lại dữ liệu mật mã khi qua tab Chơi
+        }
+
+        function clearGrid() {
+            gridData = Array(400).fill('#FFFFFF');
+            gameConfig.colorsUsed = [];
+            document.getElementById('preset-selector').value = 'custom';
+            initGrid();
+            updatePaletteStatus();
+            showToast("Đã xóa trắng bức tranh!");
+        }
+
+        function loadPreset(presetId) {
+            if (presetId === 'custom') { clearGrid(); return; }
+            const preset = PRESETS[presetId]; if (!preset) return;
+            palette = [...preset.colors];
+            for (let i = 0; i < 400; i++) { gridData[i] = palette[preset.data[i]] || '#FFFFFF'; }
+            activeColor = palette[1] || '#000000';
+            gameConfig.colorsUsed = [];
+            setTool('draw');
+            initGrid();
+            updatePaletteStatus();
+            showToast(`Đã tải mẫu đối xứng (${preset.colors.length - 1} màu)!`);
+        }
+
+        // --- STREAMING_CHUNK: Bảng màu ---
+        function renderPalette() {
+            const container = document.getElementById('palette-container');
+            container.innerHTML = '';
+            palette.forEach((color, index) => {
+                const isSelected = color === activeColor && currentTool === 'draw';
+                const isWhite = color === '#FFFFFF' || color.toLowerCase() === '#fff';
+                let html = `
+                    <div onclick="selectColor('${color}')" class="w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-transform hover:scale-110 
+                         ${isSelected ? 'ring-4 ring-blue-500 scale-110 shadow-lg' : 'ring-2 ring-slate-200'} ${isWhite ? 'border-2 border-slate-300' : ''}" style="background-color: ${color};">
+                        ${isSelected && !isWhite ? '<i class="fas fa-check text-white text-xs"></i>' : ''}
+                        ${isSelected && isWhite ? '<i class="fas fa-check text-slate-800 text-xs"></i>' : ''}
+                    </div>`;
+                container.innerHTML += html;
+            });
+            updatePaletteStatus();
+        }
+
+        function selectColor(color) { activeColor = color; setTool('draw'); renderPalette(); }
+        function setTool(tool) {
+            currentTool = tool;
+            document.getElementById('tool-draw').className = `flex-1 py-3 rounded-xl font-bold transition-all ${tool === 'draw' ? 'bg-slate-800 text-white shadow-md' : 'bg-white text-slate-600 border-2 border-slate-200'}`;
+            document.getElementById('tool-erase').className = `flex-1 py-3 rounded-xl font-bold transition-all ${tool === 'erase' ? 'bg-red-100 text-red-700 border-2 border-red-300 shadow-md' : 'bg-white text-slate-600 border-2 border-slate-200'}`;
+        }
+        function addCustomColor() { document.getElementById('color-picker').click(); }
+        function pushNewColor(hexStr) { hexStr = hexStr.toUpperCase(); if (!palette.includes(hexStr)) palette.push(hexStr); selectColor(hexStr); }
+
+        function updatePaletteStatus() {
+            const used = getActiveColors();
+            const el = document.getElementById('color-count');
+            el.innerText = used.length;
+            el.className = used.length > questions.length ? "text-red-500 font-black text-base" : "text-green-600 font-black text-base";
+        }
+
+        // --- STREAMING_CHUNK: Logic Mật Mã & Trải nghiệm Game ---
+        function prepareGameMode() {
+            const activeColors = getActiveColors();
+            if (activeColors.length === 0 || activeColors.length > questions.length) {
+                document.getElementById('play-warning').classList.remove('hidden');
+                document.getElementById('play-content').classList.add('hidden');
+                let msg = activeColors.length === 0 ? "Bức tranh đang trống, hãy vẽ gì đó!" : `Bức tranh dùng ${activeColors.length} màu, nhưng bạn chỉ có ${questions.length} câu hỏi. Hãy thêm câu hỏi hoặc giảm bớt màu.`;
+                document.getElementById('play-warning-msg').innerText = msg;
+                return;
+            }
+            
+            document.getElementById('play-warning').classList.add('hidden');
+            document.getElementById('play-content').classList.remove('hidden');
+            
+            // Cập nhật Tiêu đề bài học
+            const title = document.getElementById('lesson-title').value.trim() || 'BÀI TẬP MA TRẬN TÔ MÀU';
+            document.getElementById('web-lesson-title').innerText = title.toUpperCase();
+            document.getElementById('print-lesson-title').innerHTML = `<span>${title.toUpperCase()}</span><span style="font-size: 12px; font-weight: 700; color: #3b82f6; background: #fff; padding: 2px 8px; border-radius: 20px; border: 1px solid #bfdbfe;">0/${questions.length} đúng</span>`;
+            
+            // Tạo data nếu chưa có
+            if(gameConfig.colorsUsed.length !== activeColors.length) {
+                generateGameData();
+            } else {
+                renderWebPlay();
+                renderPrintView();
+            }
+        }
+
+        function generateGameData() {
+            const activeColors = getActiveColors();
+            gameConfig.colorsUsed = activeColors;
+            gameConfig.colorToQuestionMap = {};
+            gameConfig.questionData = [];
+            gameConfig.studentAnswers = {};
+
+            const pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+            shuffleArray(pool);
+
+            // Dành riêng N chữ cái độc lập cho N đáp án ĐÚNG (tương ứng N màu)
+            const correctLetters = pool.slice(0, activeColors.length);
+            // Phần chữ cái còn lại trong bảng 26 chữ cái dùng làm tập ký tự NHIỄU (đáp án sai & nền trắng)
+            const distractorPool = pool.slice(activeColors.length);
+
+            for (let i = 0; i < activeColors.length; i++) {
+                const colorHex = activeColors[i];
+                gameConfig.colorToQuestionMap[colorHex] = i; 
+                
+                const q = questions[i];
+                const correctLetter = correctLetters[i];
+                const wrongLetters = shuffleArray([...distractorPool]).slice(0, 3);
+                let wrongIdx = 0;
+                let opts = [];
+
+                for(let j=0; j<4; j++) {
+                    const isCorrect = (j === q.correct);
+                    const char = isCorrect ? correctLetter : wrongLetters[wrongIdx++];
+                    opts.push({ text: q.options[j], letter: char, isCorrect });
+                }
+
+                gameConfig.questionData.push({
+                    qIndex: i,
+                    originalQId: q.id,
+                    color: colorHex,
+                    correctLetter: correctLetter,
+                    options: opts
+                });
+            }
+
+            // Xây dựng Grid (20x20)
+            gameConfig.letterGrid = [];
+            for (let i = 0; i < 400; i++) {
+                const cellColor = gridData[i].toUpperCase();
+                if (cellColor !== '#FFFFFF' && cellColor !== '#FFF') {
+                    // Ô này có màu -> chứa chữ cái của đáp án đúng
+                    const qIdx = gameConfig.colorToQuestionMap[cellColor];
+                    gameConfig.letterGrid[i] = gameConfig.questionData[qIdx].correctLetter;
+                } else {
+                    // Ô nền trắng -> chứa chữ cái nhiễu ngẫu nhiên
+                    gameConfig.letterGrid[i] = distractorPool[Math.floor(Math.random() * distractorPool.length)];
+                }
+            }
+
+            renderWebPlay();
+            renderPrintView();
+            showToast("Đã tạo mật mã ngẫu nhiên mới!");
+        }
+
+        // --- RENDER WEB PLAY ---
+        function renderWebPlay() {
+            // Render Grid
+            const gridEl = document.getElementById('game-grid');
+            gridEl.innerHTML = '';
+            gameConfig.letterGrid.forEach((letter, i) => {
+                const cell = document.createElement('div');
+                cell.className = 'game-cell';
+                cell.innerText = letter;
+                
+                // Tô màu theo đáp án đã chọn (Học sinh cứ chọn chữ nào thì tô chữ đó bằng màu của câu hỏi)
+                let cellColor = '#FFFFFF';
+                for(let qIdx in gameConfig.studentAnswers) {
+                    const ansData = gameConfig.studentAnswers[qIdx];
+                    if (letter === ansData.letter) {
+                        cellColor = gameConfig.questionData[qIdx].color; // Lấy màu quy định của câu hỏi
+                        break;
+                    }
+                }
+                
+                if(cellColor !== '#FFFFFF') {
+                    cell.style.backgroundColor = cellColor;
+                    cell.style.color = 'transparent'; 
+                    cell.style.borderColor = 'rgba(0,0,0,0.05)';
+                }
+
+                gridEl.appendChild(cell);
+            });
+
+            // Render Legend (Chỉ hiện chữ đúng kèm màu)
+            const webLegend = document.getElementById('web-legend');
+            webLegend.innerHTML = gameConfig.questionData.map(qd => `
+                <div class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-full shadow-sm">
+                    <span class="font-black text-slate-800">${qd.correctLetter}</span>
+                    <span>-</span>
+                    <div class="w-4 h-4 rounded-full border border-black" style="background-color: ${qd.color};"></div>
+                    <span class="text-xs text-slate-500">${getColorName(qd.color)}</span>
+                </div>
+            `).join('');
+
+            // Render Questions
+            const qListEl = document.getElementById('play-questions-list');
+            qListEl.innerHTML = '';
+            
+            // Render đủ số lượng câu hỏi tương ứng với số màu
+            gameConfig.questionData.forEach((qd, index) => {
+                const qOriginal = questions[qd.qIndex];
+                
+                const optsHtml = qd.options.map(opt => {
+                    const ansData = gameConfig.studentAnswers[index];
+                    const isSelected = ansData && ansData.letter === opt.letter;
+                    return `
+                        <div onclick="selectAnswer(${index}, '${opt.letter}')" class="opt-btn ${isSelected ? 'selected' : ''}">
+                            <span class="letter-badge">${opt.letter}</span>
+                            <span>${opt.text}</span>
+                        </div>
+                    `;
+                }).join('');
+
+                qListEl.innerHTML += `
+                    <div class="mb-6 p-5 border-2 border-slate-100 rounded-2xl bg-slate-50">
+                        <div class="mb-3">
+                            <h4 class="font-black text-slate-800 text-base">Câu ${index + 1}: ${qOriginal.text}</h4>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${optsHtml}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function selectAnswer(qIndex, letter) {
+            gameConfig.studentAnswers[qIndex] = { letter: letter };
+            renderWebPlay();
+            
+            // Check win
+            let allDone = true;
+            for(let i=0; i<gameConfig.questionData.length; i++) {
+                if(!gameConfig.studentAnswers[i] || gameConfig.studentAnswers[i].letter !== gameConfig.questionData[i].correctLetter) { allDone = false; break; }
+            }
+            if(allDone) setTimeout(() => showToast("🎉 TUYỆT VỜI! BẠN ĐÃ GIẢI MÃ THÀNH CÔNG BỨC TRANH! 🎉"), 300);
+        }
+
+        // --- RENDER PRINT (PDF) ---
+        function renderPrintView() {
+            // Lưới In 
+            const printGridEl = document.getElementById('print-grid');
+            printGridEl.innerHTML = '';
+            gameConfig.letterGrid.forEach(letter => {
+                const cell = document.createElement('div');
+                cell.className = 'game-cell';
+                cell.innerText = letter;
+                printGridEl.appendChild(cell);
+            });
+
+            // Legend In
+            const printLegendEl = document.getElementById('print-legend');
+            printLegendEl.innerHTML = gameConfig.questionData.map(qd => `
+                <div class="legend-item">
+                    <span>${qd.correctLetter} -</span>
+                    <div class="legend-color" style="background-color: ${qd.color};"></div>
+                    <span>${getColorName(qd.color)}</span>
+                </div>
+            `).join('');
+
+            // Câu hỏi In
+            const printListEl = document.getElementById('print-questions-list');
+            printListEl.innerHTML = '';
+            
+            gameConfig.questionData.forEach((qd, index) => {
+                const qOriginal = questions[qd.qIndex];
+                const optsHtml = qd.options.map(opt => `
+                    <div class="print-opt">
+                        <span class="print-letter">${opt.letter}</span>
+                        ${opt.text}
+                    </div>
+                `).join('');
+
+                printListEl.innerHTML += `
+                    <div class="print-q-box">
+                        <div class="print-q-text">Câu ${index + 1}. ${qOriginal.text}</div>
+                        <div class="print-opt-row">${optsHtml}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- Khởi tạo ---
+        window.onload = () => { renderQuestions(); loadPreset('butterfly'); };
+    </script>
+</body>
+</html>
