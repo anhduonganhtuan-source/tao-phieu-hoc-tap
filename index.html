@@ -75,6 +75,33 @@
             font-weight: 900;
             margin-right: 10px;
             font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        /* Chuẩn hóa hiển thị chỉ số chân (subscript) và chỉ số mũ (superscript) cho CTHH */
+        sub, sup {
+            font-size: 74%;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline;
+            font-weight: 800;
+        }
+        sub { bottom: -0.22em; }
+        sup { top: -0.45em; }
+
+        .chem-btn {
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: 800;
+            border-radius: 6px;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: #1e293b;
+            transition: all 0.15s;
+        }
+        .chem-btn:hover {
+            background: #e2e8f0;
+            border-color: #94a3b8;
         }
 
         /* --- CẤU HÌNH IN ẤN (PDF) GỌN TRONG 1 TRANG A4 NGANG --- */
@@ -84,36 +111,42 @@
                 background: white !important; 
                 margin: 0 !important; 
                 padding: 0 !important; 
-                width: 100%;
-                height: 100%;
+                width: 287mm !important;
+                height: 198mm !important;
+                min-height: 0 !important;
+                max-height: 198mm !important;
                 overflow: hidden !important;
+                display: block !important;
                 -webkit-print-color-adjust: exact !important; 
                 print-color-adjust: exact !important; 
             }
-            .no-print { display: none !important; }
+            .no-print, #toast-container, header, main { display: none !important; }
             .print-container { 
                 display: flex !important; 
                 flex-direction: row !important;
-                align-items: flex-start !important;
+                align-items: stretch !important;
                 justify-content: space-between !important;
-                width: 100% !important; 
-                max-height: 196mm !important;
+                width: 287mm !important; 
+                height: 198mm !important;
+                max-height: 198mm !important;
                 overflow: hidden !important;
-                gap: 12px !important; 
+                gap: 14px !important; 
                 font-family: 'Nunito', sans-serif;
                 box-sizing: border-box;
                 page-break-inside: avoid !important;
                 page-break-after: avoid !important;
             }
             
-            /* Box Cột Trái (Thu gọn cho vừa vặn) */
+            /* Box Cột Trái (Giãn đều phủ kín chiều dọc) */
             .print-col-left { 
-                width: 36%; 
+                width: 38%; 
+                height: 100%;
                 display: flex; 
                 flex-direction: column; 
-                border: 2px solid #fde047;
-                border-radius: 12px;
-                padding: 10px 12px;
+                justify-content: space-between;
+                border: 2px solid #f59e0b;
+                border-radius: 14px;
+                padding: 12px 14px;
                 background: #fff;
                 box-sizing: border-box;
             }
@@ -121,34 +154,34 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: 6px;
+                margin-bottom: 4px;
             }
-            .print-title { font-size: 16px; font-weight: 900; color: #ef4444; text-transform: uppercase; }
+            .print-title { font-size: 18px; font-weight: 900; color: #ef4444; text-transform: uppercase; letter-spacing: 0.5px; }
             
             .student-info-box {
-                border: 1.5px dashed #fcd34d;
-                border-radius: 8px;
-                padding: 6px 10px;
-                margin-bottom: 8px;
+                border: 1.5px dashed #f59e0b;
+                border-radius: 10px;
+                padding: 8px 12px;
+                margin-bottom: 6px;
                 background: #fffbeb;
             }
             
-            /* Cố định kích thước lưới 20x20 vuông vắn, nhỏ gọn */
+            /* Kích thước lưới 20x20 lớn, rõ nét, cân đối */
             #print-grid { 
                 display: grid !important;
                 grid-template-columns: repeat(20, 1fr) !important;
                 grid-template-rows: repeat(20, 1fr) !important;
-                border: 1.5px solid #64748b; 
-                width: 280px !important; 
-                height: 280px !important; 
-                margin: 0 auto;
+                border: 2px solid #475569; 
+                width: 336px !important; 
+                height: 336px !important; 
+                margin: 2px auto;
                 box-sizing: border-box;
             }
             #print-grid .game-cell { 
                 border: 0.5px solid #cbd5e1; 
-                font-size: 9px; 
-                color: #000; 
-                font-weight: 800;
+                font-size: 10.5px; 
+                color: #0f172a; 
+                font-weight: 900;
                 padding: 0;
                 margin: 0;
                 width: 100%;
@@ -157,72 +190,109 @@
             
             /* Bảng Mật Mã Dưới Cùng */
             .print-legend {
-                margin-top: 8px;
+                margin-top: 6px;
+                padding: 8px 10px;
+                background: #f8fafc;
+                border: 1px solid #cbd5e1;
+                border-radius: 10px;
                 display: flex;
                 flex-wrap: wrap;
                 justify-content: center;
-                gap: 6px 10px;
-                font-size: 10.5px;
+                gap: 6px 12px;
+                font-size: 11px;
                 font-weight: 800;
             }
-            .legend-item { display: flex; align-items: center; gap: 3px; }
-            .legend-color { width: 11px; height: 11px; border-radius: 50%; border: 1px solid #000; }
+            .legend-item { display: flex; align-items: center; gap: 4px; }
+            .legend-color { width: 12px; height: 12px; border-radius: 50%; border: 1px solid #000; }
 
-            /* Box Cột Phải (Nằm cạnh ô tô màu, chia lưới câu hỏi thông minh) */
+            /* Box Cột Phải ( Tự động giãn phủ kín 100% chiều cao trang ) */
             .print-col-right { 
-                width: 64%; 
+                width: 62%; 
+                height: 100%;
                 display: flex; 
                 flex-direction: column; 
+                justify-content: space-between;
                 box-sizing: border-box;
             }
             .print-lesson-title {
                 background: #eff6ff;
+                border: 1.5px solid #bfdbfe;
                 color: #1e3a8a;
-                padding: 7px 14px;
-                border-radius: 10px;
+                padding: 8px 16px;
+                border-radius: 12px;
                 font-weight: 900;
-                font-size: 14px;
-                margin-bottom: 8px;
+                font-size: 15px;
+                margin-bottom: 10px;
                 text-transform: uppercase;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
+                flex-shrink: 0;
             }
             
             #print-questions-list {
+                flex: 1;
                 display: grid;
                 grid-template-columns: 1fr 1fr;
-                gap: 6px 10px;
-                align-content: start;
+                grid-auto-rows: 1fr;
+                gap: 8px 10px;
+                height: 100%;
+                box-sizing: border-box;
             }
             #print-questions-list.single-col {
                 grid-template-columns: 1fr;
-                gap: 8px;
+                gap: 10px;
             }
 
             .print-q-box { 
                 page-break-inside: avoid;
-                border: 1px solid #e2e8f0;
-                border-radius: 8px;
-                padding: 6px 8px;
+                border: 1.5px solid #cbd5e1;
+                border-radius: 10px;
+                padding: 8px 12px;
                 background: #fff;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-evenly;
+                box-sizing: border-box;
             }
-            .print-q-text { font-weight: 800; font-size: 11.5px; margin-bottom: 5px; color: #1e293b; line-height: 1.25; }
-            .print-opt-row { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+            .print-q-box.span-full {
+                grid-column: span 2;
+            }
+            .print-q-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 8px;
+                margin-bottom: 4px;
+            }
+            .print-q-text { font-weight: 800; font-size: 12px; color: #0f172a; line-height: 1.3; flex: 1; }
+            .print-q-img {
+                max-height: 44px;
+                max-width: 76px;
+                object-fit: contain;
+                border: 1px solid #cbd5e1;
+                border-radius: 6px;
+                background: #fff;
+                padding: 2px;
+                flex-shrink: 0;
+            }
+            .print-opt-row { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 8px; }
+            .print-q-box.span-full .print-opt-row { grid-template-columns: repeat(4, 1fr); }
             .print-opt { 
                 display: flex; 
                 align-items: center; 
-                font-size: 10.5px; 
+                font-size: 11px; 
                 font-weight: 700;
-                border: 1px solid #cbd5e1;
-                border-radius: 12px;
-                padding: 2px 7px;
-                line-height: 1.2;
+                border: 1px solid #94a3b8;
+                border-radius: 14px;
+                padding: 3.5px 8px;
+                line-height: 1.25;
+                background: #f8fafc;
             }
             .print-letter { 
                 color: #ea580c;
                 font-weight: 900;
-                margin-right: 4px;
+                margin-right: 5px;
             }
         }
 
@@ -258,38 +328,120 @@
         
         <!-- ================= TAB 1: NỘI DUNG & CÂU HỎI ================= -->
         <div id="view-questions" class="block animate-fade-in">
-            <!-- Tên bài học -->
+            <!-- Thanh công cụ Bài học & Nhập/Xuất JSON -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 mb-6">
-                <label class="block text-sm font-black text-slate-700 mb-2 uppercase tracking-wide"><i class="fas fa-book-open text-blue-500 mr-2"></i>Tên bài học / Tiêu đề Phiếu bài tập</label>
-                <input type="text" id="lesson-title" class="w-full border-2 border-slate-200 rounded-xl p-3 focus:border-blue-500 outline-none font-bold text-slate-800 text-lg" placeholder="VD: BÀI 9. PROTEIN VÀ ENZYME" value="BÀI 9. PROTEIN VÀ ENZYME">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
+                    <div class="lg:col-span-5">
+                        <label class="block text-xs font-black text-slate-600 mb-1.5 uppercase tracking-wide">
+                            <i class="fas fa-book-open text-blue-500 mr-1"></i>Tiêu đề Phiếu bài tập khi In / Chơi
+                        </label>
+                        <input type="text" id="lesson-title" class="w-full border-2 border-slate-200 rounded-xl p-2.5 focus:border-blue-500 outline-none font-bold text-slate-800" placeholder="VD: BÀI 9. PROTEIN VÀ ENZYME" value="BÀI 9. PROTEIN VÀ ENZYME">
+                    </div>
+                    <div class="lg:col-span-4">
+                        <label class="block text-xs font-black text-slate-600 mb-1.5 uppercase tracking-wide">
+                            <i class="fas fa-filter text-amber-500 mr-1"></i>Lọc theo Bài lưu / Chủ đề
+                        </label>
+                        <select id="topic-filter" onchange="onTopicFilterChange(this.value)" class="w-full border-2 border-slate-200 rounded-xl p-2.5 focus:border-blue-500 outline-none font-bold text-blue-700 bg-blue-50 cursor-pointer">
+                            <option value="ALL">-- Tất cả bài học --</option>
+                        </select>
+                    </div>
+                    <div class="lg:col-span-3 flex gap-2">
+                        <input type="file" id="json-file-input" accept=".json" class="hidden" onchange="importQuestionsJSON(event)">
+                        <button onclick="document.getElementById('json-file-input').click()" class="flex-1 bg-emerald-600 text-white py-2.5 px-3 rounded-xl font-bold text-sm hover:bg-emerald-700 shadow-sm flex items-center justify-center gap-1.5" title="Nhập câu hỏi từ file JSON">
+                            <i class="fas fa-file-import"></i> Nhập JSON
+                        </button>
+                        <button onclick="exportQuestionsJSON()" class="flex-1 bg-slate-800 text-white py-2.5 px-3 rounded-xl font-bold text-sm hover:bg-slate-900 shadow-sm flex items-center justify-center gap-1.5" title="Tải ngân hàng câu hỏi ra file JSON">
+                            <i class="fas fa-file-export"></i> Xuất JSON
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Form -->
                 <div class="lg:col-span-1">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <h2 class="text-lg font-black mb-4 text-slate-800"><i class="fas fa-edit text-blue-500 mr-2"></i>Thêm/Sửa Câu Hỏi</h2>
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                        <h2 class="text-lg font-black mb-3 text-slate-800"><i class="fas fa-flask text-blue-500 mr-2"></i>Thêm/Sửa Câu Hỏi Hóa Học</h2>
                         <input type="hidden" id="edit-id" value="-1">
-                        <div class="space-y-4">
+                        <div class="space-y-3">
                             <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-1">Nội dung</label>
-                                <textarea id="q-text" rows="3" class="w-full border-2 border-slate-200 rounded-xl p-3 focus:border-blue-500 outline-none font-medium" placeholder="Nhập câu hỏi..."></textarea>
+                                <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">Thuộc Bài học / Chủ đề</label>
+                                <input type="text" id="q-topic" list="topic-suggestions" class="w-full border-2 border-slate-200 rounded-xl p-2 focus:border-blue-500 outline-none font-bold text-slate-700 text-sm" placeholder="VD: Lớp 12 - Bài 1: Ester - Lipid" value="Lớp 12 - Bài 1: Ester - Lipid">
+                                <datalist id="topic-suggestions"></datalist>
                             </div>
-                            <div class="space-y-2">
-                                <div><input type="text" id="q-opt0" placeholder="Đáp án 1" class="w-full border-2 rounded-xl p-2.5 outline-none focus:border-blue-500 font-medium"></div>
-                                <div><input type="text" id="q-opt1" placeholder="Đáp án 2" class="w-full border-2 rounded-xl p-2.5 outline-none focus:border-blue-500 font-medium"></div>
-                                <div><input type="text" id="q-opt2" placeholder="Đáp án 3" class="w-full border-2 rounded-xl p-2.5 outline-none focus:border-blue-500 font-medium"></div>
-                                <div><input type="text" id="q-opt3" placeholder="Đáp án 4" class="w-full border-2 rounded-xl p-2.5 outline-none focus:border-blue-500 font-medium"></div>
+
+                            <!-- Thanh công cụ gõ Công thức Hóa học -->
+                            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <span class="text-[11px] font-black text-slate-600 uppercase"><i class="fas fa-atom text-indigo-500 mr-1"></i>Công cụ Công thức Hóa học</span>
+                                    <span class="text-[10px] text-emerald-600 font-bold">Tự động nhận diện H2SO4 &rarr; H₂SO₄</span>
+                                </div>
+                                <div class="flex flex-wrap gap-1">
+                                    <button type="button" onclick="insertChemTag('<sub>', '</sub>')" class="chem-btn" title="Chỉ số chân (VD: H₂O)">x<sub>2</sub> Chân</button>
+                                    <button type="button" onclick="insertChemTag('<sup>', '</sup>')" class="chem-btn" title="Chỉ số mũ / Điện tích ion (VD: Fe³⁺)">x<sup>2+</sup> Mũ/Ion</button>
+                                    <button type="button" onclick="insertChemText(' → ')" class="chem-btn" title="Mũi tên phản ứng">&rarr;</button>
+                                    <button type="button" onclick="insertChemText(' ⇌ ')" class="chem-btn" title="Phản ứng thuận nghịch">&#8652;</button>
+                                    <button type="button" onclick="insertChemText(' (t°) ')" class="chem-btn" title="Nhiệt độ">t&deg;</button>
+                                    <button type="button" onclick="insertChemText('α')" class="chem-btn">&alpha;</button>
+                                    <button type="button" onclick="insertChemText('β')" class="chem-btn">&beta;</button>
+                                    <button type="button" onclick="insertChemText('ΔrH°298')" class="chem-btn">&Delta;<sub>r</sub>H&deg;<sub>298</sub></button>
+                                </div>
                             </div>
+
                             <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-1">Đáp án đúng là:</label>
-                                <select id="q-correct" class="w-full border-2 border-slate-200 rounded-xl p-2.5 outline-none font-bold text-blue-600 bg-blue-50">
+                                <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">Nội dung câu hỏi</label>
+                                <textarea id="q-text" rows="3" oninput="updateLiveChemPreview()" onfocus="setLastFocusedInput(this)" class="w-full border-2 border-slate-200 rounded-xl p-2.5 focus:border-blue-500 outline-none font-medium text-sm" placeholder="Nhập câu hỏi (VD: Cho Cu(OH)2 tác dụng với H2SO4 hoặc Fe^{3+})..."></textarea>
+                            </div>
+
+                            <!-- Ô tải ảnh minh họa câu hỏi -->
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase">
+                                    <i class="fas fa-image text-pink-500 mr-1"></i>Ảnh minh họa câu hỏi (Tùy chọn)
+                                </label>
+                                <div class="flex flex-wrap gap-1.5 mb-2">
+                                    <input type="file" id="q-image-input" accept="image/*" class="hidden" onchange="handleQuestionImageUpload(event)">
+                                    <button type="button" onclick="document.getElementById('q-image-input').click()" class="flex-1 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 py-1.5 px-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-1 shadow-sm">
+                                        <i class="fas fa-upload text-blue-500"></i> Tải ảnh từ máy
+                                    </button>
+                                    <select id="chem-diagram-preset" onchange="selectBuiltInDiagram(this.value)" class="flex-1 bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 outline-none cursor-pointer">
+                                        <option value="">-- Hình thí nghiệm sẵn --</option>
+                                        <option value="water_displacement">Hình: Thu khí đẩy nước</option>
+                                        <option value="upward_air">Hình: Thu khí đẩy không khí (ngửa bình)</option>
+                                        <option value="separatory_funnel">Hình: Phễu chiết tách chất lỏng</option>
+                                        <option value="distillation">Hình: Chưng cất đơn giản</option>
+                                        <option value="galvanic_cell">Hình: Pin điện hóa Zn - Cu</option>
+                                    </select>
+                                </div>
+                                <div id="q-image-preview-box" class="hidden relative bg-white p-2 rounded-lg border border-slate-200 flex items-center justify-between">
+                                    <img id="q-image-preview" src="" alt="Preview" class="h-14 object-contain rounded">
+                                    <button type="button" onclick="clearQuestionImage()" class="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-2.5 py-1 rounded-md font-bold">
+                                        <i class="fas fa-times mr-1"></i>Xóa ảnh
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <div><input type="text" id="q-opt0" oninput="updateLiveChemPreview()" onfocus="setLastFocusedInput(this)" placeholder="Đáp án 1 (VD: CH3COOC2H5)" class="w-full border-2 rounded-xl p-2 outline-none focus:border-blue-500 font-medium text-sm"></div>
+                                <div><input type="text" id="q-opt1" oninput="updateLiveChemPreview()" onfocus="setLastFocusedInput(this)" placeholder="Đáp án 2 (VD: Fe2(SO4)3)" class="w-full border-2 rounded-xl p-2 outline-none focus:border-blue-500 font-medium text-sm"></div>
+                                <div><input type="text" id="q-opt2" oninput="updateLiveChemPreview()" onfocus="setLastFocusedInput(this)" placeholder="Đáp án 3 (VD: Cu(OH)2)" class="w-full border-2 rounded-xl p-2 outline-none focus:border-blue-500 font-medium text-sm"></div>
+                                <div><input type="text" id="q-opt3" oninput="updateLiveChemPreview()" onfocus="setLastFocusedInput(this)" placeholder="Đáp án 4 (VD: [Ag(NH3)2]+)" class="w-full border-2 rounded-xl p-2 outline-none focus:border-blue-500 font-medium text-sm"></div>
+                            </div>
+
+                            <!-- Khung xem trước hiển thị Công thức Hóa học -->
+                            <div id="q-live-preview" class="hidden bg-blue-50/70 border border-blue-200 rounded-xl p-2.5 text-xs">
+                                <div class="font-black text-blue-800 uppercase text-[10px] mb-1">Xem trước hiển thị CTHH:</div>
+                                <div id="q-live-preview-content" class="text-slate-800 font-bold space-y-1"></div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">Đáp án đúng là:</label>
+                                <select id="q-correct" class="w-full border-2 border-slate-200 rounded-xl p-2 outline-none font-bold text-blue-600 bg-blue-50 text-sm">
                                     <option value="0">Đáp án 1</option><option value="1">Đáp án 2</option><option value="2">Đáp án 3</option><option value="3">Đáp án 4</option>
                                 </select>
                             </div>
-                            <div class="flex gap-2 pt-2">
-                                <button onclick="saveQuestion()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 shadow-md transition-transform active:scale-95">Lưu Lại</button>
-                                <button onclick="resetForm()" class="px-4 bg-slate-100 text-slate-600 py-3 rounded-xl font-bold hover:bg-slate-200">Hủy</button>
+                            <div class="flex gap-2 pt-1">
+                                <button onclick="saveQuestion()" class="flex-1 bg-blue-600 text-white py-2.5 rounded-xl font-bold hover:bg-blue-700 shadow-md transition-transform active:scale-95">Lưu Câu Hỏi</button>
+                                <button onclick="resetForm()" class="px-4 bg-slate-100 text-slate-600 py-2.5 rounded-xl font-bold hover:bg-slate-200">Hủy</button>
                             </div>
                         </div>
                     </div>
@@ -298,11 +450,14 @@
                 <!-- Danh sách -->
                 <div class="lg:col-span-2">
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 h-full flex flex-col">
-                        <div class="flex justify-between items-center mb-4 pb-2 border-b-2 border-slate-100">
-                            <h2 class="text-lg font-black text-slate-800">Danh sách câu hỏi (<span id="q-count">0</span>)</h2>
-                            <div class="text-xs text-amber-700 bg-amber-100 px-3 py-1.5 rounded-lg font-bold border border-amber-200">
-                                Cần số câu hỏi lớn hơn hoặc bằng số màu dùng trong tranh!
+                        <div class="flex flex-wrap justify-between items-center gap-2 mb-4 pb-2 border-b-2 border-slate-100">
+                            <div>
+                                <h2 class="text-lg font-black text-slate-800">Ngân hàng câu hỏi (<span id="q-count">0</span> câu)</h2>
+                                <p class="text-xs text-slate-500 font-semibold">Hệ thống sẽ bốc ngẫu nhiên số câu hỏi bằng với số màu của bức tranh trong bài đang lọc.</p>
                             </div>
+                            <button onclick="downloadSampleJSON()" class="text-xs text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold border border-blue-200">
+                                <i class="fas fa-download mr-1"></i>Tải JSON mẫu
+                            </button>
                         </div>
                         <div id="questions-list" class="flex-1 overflow-y-auto pr-2 space-y-3 max-h-[600px] no-scrollbar"></div>
                     </div>
@@ -314,7 +469,7 @@
         <div id="view-image" class="hidden animate-fade-in">
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-6">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-                    <h2 class="text-xl font-black text-slate-800"><i class="fas fa-palette text-blue-500 mr-2"></i>Thiết Kế Tranh Ẩn (Đối Xứng)</h2>
+                    <h2 class="text-xl font-black text-slate-800"><i class="fas fa-palette text-blue-500 mr-2"></i>Thiết Kế Tranh Ẩn (24 Mẫu Đối Xứng)</h2>
                     <div class="flex items-center gap-3">
                         <select id="preset-selector" onchange="loadPreset(this.value)" class="border-2 border-slate-200 rounded-xl p-2.5 outline-none font-bold text-slate-700 bg-slate-50 cursor-pointer">
                             <option value="custom">-- Vẽ Tự Do --</option>
@@ -323,24 +478,32 @@
                                 <option value="chick">🐥 Gà Con Đáng Yêu (5 màu)</option>
                                 <option value="watermelon">🍉 Dưa Hấu Mát Lạnh (5 màu)</option>
                                 <option value="flask">⚗️ Bình Cầu Hóa Học (5 màu)</option>
+                                <option value="heart_wings">👼 Trái Tim Đôi Cánh (5 màu)</option>
+                                <option value="diamond">💎 Kim Cương Xanh (5 màu)</option>
                             </optgroup>
                             <optgroup label="🔵 Mức 7 Câu (7 Màu - Đối xứng)">
                                 <option value="owl">🦉 Cú Mèo Thông Thái (7 màu)</option>
                                 <option value="xmas">🎄 Cây Thông Giáng Sinh (7 màu)</option>
                                 <option value="trophy">🏆 Cúp Vàng Vinh Quang (7 màu)</option>
                                 <option value="mushroom">🍄 Nấm Thần Kỳ (7 màu)</option>
+                                <option value="lucky_cat">🐱 Mèo Thần Tài (7 màu)</option>
+                                <option value="lotus">🪷 Hoa Sen Thanh Khiết (7 màu)</option>
                             </optgroup>
                             <optgroup label="🟠 Mức 8 Câu (8 Màu - Đối xứng)">
                                 <option value="robot">🤖 Robot Trí Tuệ (8 màu)</option>
                                 <option value="rocket">🚀 Tên Lửa Vũ Trụ (8 màu)</option>
                                 <option value="halloween">🎃 Bí Ngô Phù Thủy (8 màu)</option>
                                 <option value="atom">⚛️ Nguyên Tử Hóa Học (8 màu)</option>
+                                <option value="panda">🐼 Gấu Trúc Đáng Yêu (8 màu)</option>
+                                <option value="castle">🏰 Lâu Đài Cổ Tích (8 màu)</option>
                             </optgroup>
                             <optgroup label="🔴 Mức 10 Câu (10 Màu - Đối xứng)">
                                 <option value="astronaut">👨‍🚀 Phi Hành Gia Vũ Trụ (10 màu)</option>
                                 <option value="crown">👑 Vương Miện Hoàng Gia (10 màu)</option>
                                 <option value="peacock">🦚 Chim Công Rực Rỡ (10 màu)</option>
                                 <option value="mandala_heart">💖 Trái Tim Pha Lê (10 màu)</option>
+                                <option value="lion">🦁 Sư Tử Dũng Mãnh (10 màu)</option>
+                                <option value="phoenix">🔥 Phượng Hoàng Lửa (10 màu)</option>
                             </optgroup>
                         </select>
                         <button onclick="clearGrid()" class="px-4 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 font-bold"><i class="fas fa-trash-alt"></i> Xóa</button>
@@ -384,14 +547,19 @@
 
             <!-- Khu vực Game chính thức -->
             <div id="play-content" class="hidden">
-                <div class="flex justify-between items-end mb-4">
+                <div class="flex flex-col md:flex-row justify-between md:items-end gap-4 mb-4">
                     <div>
                         <h2 class="text-2xl font-black text-slate-800">Chơi Thử & Xuất Bản</h2>
-                        <p class="text-sm text-slate-500 font-semibold">Trả lời câu hỏi, dò chữ cái trong bảng Mật Mã để tô màu.</p>
+                        <p class="text-sm text-slate-500 font-semibold">Đang lấy ngẫu nhiên <span id="active-q-count-badge" class="text-blue-600 font-black">0</span> câu hỏi từ chủ đề đã chọn.</p>
                     </div>
-                    <button onclick="printWorksheet()" class="px-6 py-3 bg-blue-600 text-white rounded-xl font-black shadow-lg hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-2">
-                        <i class="fas fa-file-pdf"></i> XUẤT FILE PDF
-                    </button>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="generateGameData(true)" class="px-4 py-3 bg-amber-500 text-white rounded-xl font-black shadow-md hover:bg-amber-600 transition-all active:scale-95 flex items-center gap-2">
+                            <i class="fas fa-dice"></i> BỐC BỘ CÂU HỎI NGẪU NHIÊN KHÁC
+                        </button>
+                        <button onclick="printWorksheet()" class="px-6 py-3 bg-blue-600 text-white rounded-xl font-black shadow-lg hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-2">
+                            <i class="fas fa-file-pdf"></i> XUẤT FILE PDF (1 TRANG A4)
+                        </button>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
@@ -478,43 +646,461 @@
     <div id="toast-container"></div>
 
     <script>
-        // --- STREAMING_CHUNK: State & Data Initialization ---
-        let questions = [
-            { id: 1, text: "Hợp chất nào sau đây thuộc loại protein?", options: ["Saccharose", "Triglyceride", "Albumin", "Cellulose"], correct: 2 },
-            { id: 2, text: "Protein nào sau đây không phải là protein dạng sợi?", options: ["Amylase", "Collagen", "Fibroin", "Keratin"], correct: 0 },
-            { id: 3, text: "Chất cơ sở để hình thành nên các phân tử protein đơn giản là", options: ["α-amino acid", "acid béo", "các loại đường", "tinh bột"], correct: 0 },
-            { id: 4, text: "Protein là hợp chất cao phân tử được hình thành từ một hay nhiều chuỗi", options: ["amylopectin", "polypropylene", "polysaccharide", "polypeptide"], correct: 3 },
-            { id: 5, text: "Phản ứng giữa albumin với Cu(OH)2 trong môi trường kiềm tạo màu:", options: ["Tím", "Xanh lam", "Đỏ gạch", "Vàng"], correct: 0 },
-            { id: 6, text: "Hiện tượng 'gạch cua' nổi lên khi nấu canh cua là do:", options: ["Sự đông tụ protein", "Sự đông tụ lipid", "Sự thủy phân", "Sự lên men"], correct: 0 },
-            { id: 7, text: "Enzyme có bản chất là hợp chất nào sau đây?", options: ["Carbohydrate", "Lipid", "Protein", "Nucleic acid"], correct: 2 },
-            { id: 8, text: "Chức năng chính của enzyme trong cơ thể là gì?", options: ["Cung cấp năng lượng", "Xúc tác sinh học", "Bảo vệ cơ thể", "Lưu trữ thông tin"], correct: 1 },
-            { id: 9, text: "Liên kết hóa học chính cấu tạo nên chuỗi polypeptide là:", options: ["Liên kết hydrogen", "Liên kết ion", "Liên kết peptide", "Liên kết disulfide"], correct: 2 },
-            { id: 10, text: "Hemoglobin trong hồng cầu có chức năng chính là:", options: ["Vận chuyển oxy", "Đông máu", "Bảo vệ cơ thể", "Xúc tác phản ứng"], correct: 0 }
+        // --- BỘ XỬ LÝ CÔNG THỨC HÓA HỌC CHUẨN (CHỈ SỐ CHÂN & MŨ) ---
+        let lastFocusedInput = null;
+        let currentQuestionImage = "";
+
+        function setLastFocusedInput(el) {
+            lastFocusedInput = el;
+        }
+
+        function insertChemTag(openTag, closeTag) {
+            const el = lastFocusedInput || document.getElementById('q-text');
+            if (!el) return;
+            const start = el.selectionStart || 0;
+            const end = el.selectionEnd || 0;
+            const text = el.value;
+            const selected = text.substring(start, end) || "2";
+            el.value = text.substring(0, start) + openTag + selected + closeTag + text.substring(end);
+            el.focus();
+            el.setSelectionRange(start + openTag.length, start + openTag.length + selected.length);
+            updateLiveChemPreview();
+        }
+
+        function insertChemText(str) {
+            const el = lastFocusedInput || document.getElementById('q-text');
+            if (!el) return;
+            const start = el.selectionStart || 0;
+            const end = el.selectionEnd || 0;
+            const text = el.value;
+            el.value = text.substring(0, start) + str + text.substring(end);
+            el.focus();
+            el.setSelectionRange(start + str.length, start + str.length);
+            updateLiveChemPreview();
+        }
+
+        // Hàm tự động chuẩn hóa công thức hóa học (H2SO4 -> H₂SO₄, Fe^{3+} -> Fe³⁺, (C6H10O5)n -> (C₆H₁₀O₅)ₙ)
+        function formatChem(rawStr) {
+            if (!rawStr && rawStr !== 0) return "";
+            let s = String(rawStr);
+
+            // 1. Chuyển đổi mũi tên và ký hiệu nhiệt độ/cân bằng
+            s = s.replace(/<=>|<->/g, '⇌').replace(/->/g, '→');
+
+            // 2. Chuyển đổi cú pháp mũ/chân tường minh: ^{...}, _{...}, ^2+, _2
+            s = s.replace(/\^\{([^}]+)\}/g, '<sup>$1</sup>');
+            s = s.replace(/_\{([^}]+)\}/g, '<sub>$1</sub>');
+            s = s.replace(/\^(\d+[+\-]?|[+\-])/g, '<sup>$1</sup>');
+            s = s.replace(/_(\d+|[n])/g, '<sub>$1</sub>');
+
+            // 3. Chuyển đổi cấu hình electron phổ biến (1s2 2s2 2p6 3s2 3p6 3d10 4s2)
+            s = s.replace(/\b([1-7][spdf])(\d{1,2})\b/g, '$1<sup>$2</sup>');
+
+            // 4. Chuyển đổi ký hiệu enthalpy chuẩn ΔrH°298 hoặc ΔfH°298
+            s = s.replace(/Δ([rf])H°298/g, 'Δ<sub>$1</sub>H°<sub>298</sub>');
+
+            // 5. Chuyển đổi chỉ số polymer )n hoặc ]n
+            s = s.replace(/(\)|\])n\b/g, '$1<sub>n</sub>');
+
+            // 6. Chuyển đổi tự động chỉ số chân trong công thức hóa học:
+            // Nguyên tố hóa học [A-Z][a-z]? hoặc dấu đóng ngoặc ) / ] theo sau ngay bởi chữ số
+            s = s.replace(/([A-Z][a-z]?|\)|\])(\d+)/g, '$1<sub>$2</sub>');
+
+            return s;
+        }
+
+        function updateLiveChemPreview() {
+            const qText = document.getElementById('q-text').value.trim();
+            const opts = [0,1,2,3].map(i => document.getElementById(`q-opt${i}`).value.trim());
+            const previewBox = document.getElementById('q-live-preview');
+            const previewContent = document.getElementById('q-live-preview-content');
+            if (!qText && opts.every(o => !o)) {
+                previewBox.classList.add('hidden');
+                return;
+            }
+            previewBox.classList.remove('hidden');
+            let html = qText ? `<div><span class="text-blue-600">Câu hỏi:</span> ${formatChem(qText)}</div>` : '';
+            const nonEmptyOpts = opts.filter(Boolean);
+            if (nonEmptyOpts.length > 0) {
+                html += `<div class="grid grid-cols-2 gap-1 pt-1 text-[11px] text-slate-600">` +
+                    opts.map((o, idx) => o ? `<div>• ĐA ${idx+1}: <b class="text-slate-800">${formatChem(o)}</b></div>` : '').join('') +
+                    `</div>`;
+            }
+            previewContent.innerHTML = html;
+        }
+
+        // --- HÌNH VẼ THÍ NGHIỆM HÓA HỌC MẪU (SVG DATA URI) & XỬ LÝ ẢNH TẢI LÊN ---
+        const CHEM_DIAGRAMS = {
+            'water_displacement': `data:image/svg+xml;utf8,` + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 130"><rect width="220" height="130" rx="10" fill="#f8fafc"/><rect x="110" y="65" width="90" height="50" rx="4" fill="#bae6fd" stroke="#0284c7" stroke-width="2"/><line x1="110" y1="75" x2="200" y2="75" stroke="#0284c7" stroke-width="1.5" stroke-dasharray="3,2"/><rect x="142" y="20" width="26" height="65" rx="12" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/><rect x="144" y="48" width="22" height="36" fill="#bae6fd"/><circle cx="155" cy="42" r="3" fill="#fff" stroke="#0284c7"/><circle cx="151" cy="33" r="2.5" fill="#fff" stroke="#0284c7"/><path d="M25,45 L65,25 L72,38 L32,58 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="2"/><path d="M68,31 L100,31 L125,88 L155,88 L155,78" fill="none" stroke="#475569" stroke-width="3"/><path d="M22,70 Q27,55 32,70 Z" fill="#ef4444"/><text x="12" y="118" font-family="sans-serif" font-size="10" font-weight="bold" fill="#0f172a">Thu khí bằng dời chỗ nước</text></svg>`),
+            'upward_air': `data:image/svg+xml;utf8,` + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 130"><rect width="220" height="130" rx="10" fill="#f8fafc"/><rect x="130" y="45" width="44" height="68" rx="6" fill="#fef9c3" stroke="#ca8a04" stroke-width="2"/><rect x="124" y="40" width="56" height="7" rx="2" fill="#94a3b8"/><path d="M35,35 L152,35 L152,102" fill="none" stroke="#334155" stroke-width="3.5"/><text x="142" y="95" font-family="sans-serif" font-size="12" font-weight="bold" fill="#854d0e">Khí X</text><text x="20" y="122" font-family="sans-serif" font-size="10" font-weight="bold" fill="#0f172a">Thu khí đẩy không khí (ngửa bình)</text></svg>`),
+            'separatory_funnel': `data:image/svg+xml;utf8,` + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 130"><rect width="220" height="130" rx="10" fill="#f8fafc"/><path d="M85,20 L135,20 L125,65 L113,85 L107,85 L95,65 Z" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/><path d="M88,32 L132,32 L127,55 L93,55 Z" fill="#fde047" opacity="0.85"/><path d="M93,55 L127,55 L125,65 L113,85 L107,85 L95,65 Z" fill="#38bdf8" opacity="0.75"/><rect x="102" y="85" width="16" height="6" rx="2" fill="#ef4444"/><line x1="110" y1="91" x2="110" y2="115" stroke="#0369a1" stroke-width="3"/><text x="140" y="46" font-family="sans-serif" font-size="10" font-weight="bold" fill="#b45309">Lớp hữu cơ</text><text x="140" y="72" font-family="sans-serif" font-size="10" font-weight="bold" fill="#0369a1">Lớp nước</text></svg>`),
+            'distillation': `data:image/svg+xml;utf8,` + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 130"><rect width="220" height="130" rx="10" fill="#f8fafc"/><circle cx="50" cy="80" r="22" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/><rect x="44" y="35" width="12" height="25" fill="#fff" stroke="#dc2626" stroke-width="2"/><path d="M56,42 L155,78 L175,98" fill="none" stroke="#0284c7" stroke-width="3"/><path d="M80,45 L140,67 L134,80 L74,58 Z" fill="#bae6fd" opacity="0.7" stroke="#0284c7" stroke-width="1.5"/><path d="M162,95 L192,95 L186,118 L168,118 Z" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/><text x="15" y="122" font-family="sans-serif" font-size="10" font-weight="bold" fill="#0f172a">Hệ thống chưng cất đơn giản</text></svg>`),
+            'galvanic_cell': `data:image/svg+xml;utf8,` + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 130"><rect width="220" height="130" rx="10" fill="#f8fafc"/><rect x="25" y="55" width="60" height="58" rx="4" fill="#f1f5f9" stroke="#475569" stroke-width="2"/><rect x="135" y="55" width="60" height="58" rx="4" fill="#bae6fd" stroke="#0284c7" stroke-width="2"/><rect x="38" y="38" width="12" height="60" fill="#94a3b8" stroke="#334155"/><rect x="170" y="38" width="12" height="60" fill="#ea580c" stroke="#9a3412"/><path d="M44,38 L44,18 L176,18 L176,38" fill="none" stroke="#1e293b" stroke-width="2"/><circle cx="110" cy="18" r="11" fill="#fef08a" stroke="#ca8a04" stroke-width="2"/><text x="105" y="22" font-family="sans-serif" font-size="10" font-weight="bold">V</text><path d="M72,65 L72,42 L148,42 L148,65" fill="none" stroke="#10b981" stroke-width="5"/><text x="34" y="110" font-family="sans-serif" font-size="9" font-weight="bold">ZnSO4</text><text x="148" y="110" font-family="sans-serif" font-size="9" font-weight="bold">CuSO4</text></svg>`)
+        };
+
+        function selectBuiltInDiagram(key) {
+            if (!key || !CHEM_DIAGRAMS[key]) return;
+            currentQuestionImage = CHEM_DIAGRAMS[key];
+            showQuestionImagePreview(currentQuestionImage);
+        }
+
+        function handleQuestionImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const maxDim = 360;
+                    let w = img.width, h = img.height;
+                    if (w > maxDim || h > maxDim) {
+                        if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+                        else { w = Math.round(w * maxDim / h); h = maxDim; }
+                    }
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    currentQuestionImage = canvas.toDataURL('image/png', 0.85);
+                    showQuestionImagePreview(currentQuestionImage);
+                    showToast("Đã tải ảnh minh họa câu hỏi!");
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            event.target.value = "";
+        }
+
+        function showQuestionImagePreview(src) {
+            const box = document.getElementById('q-image-preview-box');
+            const img = document.getElementById('q-image-preview');
+            if (src) {
+                img.src = src;
+                box.classList.remove('hidden');
+            } else {
+                img.src = "";
+                box.classList.add('hidden');
+            }
+        }
+
+        function clearQuestionImage() {
+            currentQuestionImage = "";
+            document.getElementById('chem-diagram-preset').value = "";
+            showQuestionImagePreview("");
+        }
+
+        // --- NGÂN HÀNG CÂU HỎI HÓA HỌC LỚP 10, 11, 12 (GDPT 2018 - DANH PHÁP IUPAC - 15 CÂU/BÀI) ---
+        const TOPICS_LIST = [
+            // KHỐI 10
+            "Lớp 10 - Bài 1: Cấu tạo nguyên tử",
+            "Lớp 10 - Bài 2: Bảng tuần hoàn các nguyên tố hóa học",
+            "Lớp 10 - Bài 3: Liên kết hóa học",
+            "Lớp 10 - Bài 4: Phản ứng oxi hóa - khử & Năng lượng hóa học",
+            "Lớp 10 - Bài 5: Nhóm Halogen",
+            // KHỐI 11
+            "Lớp 11 - Bài 1: Cân bằng hóa học",
+            "Lớp 11 - Bài 2: Nitrogen và Sulfur",
+            "Lớp 11 - Bài 3: Đại cương Hữu cơ & Hydrocarbon",
+            "Lớp 11 - Bài 4: Dẫn xuất Halogen - Alcohol - Phenol",
+            "Lớp 11 - Bài 5: Hợp chất Carbonyl và Carboxylic acid",
+            // KHỐI 12
+            "Lớp 12 - Bài 1: Ester - Lipid",
+            "Lớp 12 - Bài 2: Carbohydrate",
+            "Lớp 12 - Bài 3: Hợp chất chứa Nitrogen (Amine - Amino acid - Protein)",
+            "Lớp 12 - Bài 4: Polymer",
+            "Lớp 12 - Bài 5: Đại cương Kim loại & Điện hóa học"
         ];
+
+        const RAW_CHEMISTRY_BANK = [
+            // ==================== LỚP 10 - BÀI 1: CẤU TẠO NGUYÊN TỬ (15 CÂU) ====================
+            [0, "Hạt mang điện tích dương trong hạt nhân nguyên tử là:", ["Proton (p)", "Neutron (n)", "Electron (e)", "Phân tử"], 0],
+            [0, "Hạt không mang điện trong hạt nhân nguyên tử là:", ["Neutron (n)", "Proton (p)", "Electron (e)", "Cation"], 0],
+            [0, "Lớp vỏ nguyên tử được cấu tạo bởi các hạt nào sau đây?", ["Electron", "Proton", "Neutron", "Proton và neutron"], 0],
+            [0, "Trong nguyên tử trung hòa về điện, phát biểu nào sau đây đúng?", ["Số proton bằng số electron", "Số proton bằng số neutron", "Số electron bằng số neutron", "Số khối bằng số neutron"], 0],
+            [0, "Số khối (A) của hạt nhân nguyên tử bằng tổng của:", ["Số proton (Z) và số neutron (N)", "Số proton (Z) và số electron", "Số neutron (N) và số electron", "Số đơn vị điện tích hạt nhân"], 0],
+            [0, "Nguyên tử sodium (Na) có Z = 11 và A = 23. Số hạt neutron trong nguyên tử Na là:", ["12", "11", "23", "34"], 0],
+            [0, "Các nguyên tử của cùng một nguyên tố hóa học có cùng số proton nhưng khác nhau về số neutron được gọi là:", ["Đồng vị", "Đồng phân", "Đồng đẳng", "Thù hình"], 0],
+            [0, "Orbital nguyên tử (AO) thuộc phân lớp s có dạng hình học nào sau đây?", ["Hình cầu", "Hình số tám nổi", "Hình tứ diện đều", "Hình tam giác phẳng"], 0],
+            [0, "Các orbital nguyên tử thuộc phân lớp p (p_x, p_y, p_z) có dạng hình gì?", ["Hình số tám nổi", "Hình cầu", "Hình lập phương", "Hình lục giác"], 0],
+            [0, "Số electron tối đa chứa trong các phân lớp s, p, d, f lần lượt là:", ["2, 6, 10, 14", "2, 8, 18, 32", "1, 3, 5, 7", "2, 6, 8, 12"], 0],
+            [0, "Số lượng orbital nguyên tử (AO) có trong phân lớp d là:", ["5", "3", "1", "7"], 0],
+            [0, "Nguyên tử chlorine (Cl) có Z = 17. Cấu hình electron của nguyên tử Cl là:", ["1s2 2s2 2p6 3s2 3p5", "1s2 2s2 2p6 3s2 3p4", "1s2 2s2 2p6 3s2 3p6", "1s2 2s2 2p5 3s2 3p6"], 0],
+            [0, "Nguyên tử aluminium (Al, Z = 13) có số electron ở lớp ngoài cùng là:", ["3", "1", "2", "5"], 0],
+            [0, "Nguyên tử của nguyên tố có cấu hình electron 1s2 2s2 2p6 3s2 3p6 4s1 là:", ["Kim loại", "Phi kim", "Khí hiếm", "Á kim"], 0],
+            [0, "Nguyên tử iron (Fe) có Z = 26. Cấu hình electron của ion Fe^{3+} là:", ["1s2 2s2 2p6 3s2 3p6 3d5", "1s2 2s2 2p6 3s2 3p6 3d6", "1s2 2s2 2p6 3s2 3p6 3d3 4s2", "1s2 2s2 2p6 3s2 3p6 4s2 3d3"], 0],
+
+            // ==================== LỚP 10 - BÀI 2: BẢNG TUẦN HOÀN (15 CÂU) ====================
+            [1, "Các nguyên tố trong bảng tuần hoàn hiện đại được sắp xếp theo chiều tăng dần của:", ["Điện tích hạt nhân nguyên tử", "Khối lượng nguyên tử", "Bán kính nguyên tử", "Số hạt neutron trong hạt nhân"], 0],
+            [1, "Số thứ tự của ô nguyên tố trong bảng tuần hoàn bằng:", ["Số hiệu nguyên tử (Z)", "Số khối (A)", "Số thứ tự chu kì", "Số thứ tự nhóm"], 0],
+            [1, "Số thứ tự của chu kì trong bảng tuần hoàn bằng:", ["Số lớp electron trong nguyên tử", "Số electron lớp ngoài cùng", "Số electron hóa trị", "Số hạt proton trong hạt nhân"], 0],
+            [1, "Bảng tuần hoàn các nguyên tố hóa học hiện nay gồm bao nhiêu chu kì?", ["7 chu kì", "8 chu kì", "6 chu kì", "9 chu kì"], 0],
+            [1, "Các nguyên tố thuộc nhóm IA (trừ hydrogen) trong bảng tuần hoàn được gọi là nhóm:", ["Kim loại kiềm", "Kim loại kiềm thổ", "Halogen", "Khí hiếm"], 0],
+            [1, "Các nguyên tố thuộc nhóm IIA trong bảng tuần hoàn được gọi là nhóm:", ["Kim loại kiềm thổ", "Kim loại kiềm", "Halogen", "Chalcogen"], 0],
+            [1, "Nguyên tử magnesium (Mg, Z = 12) nằm ở vị trí nào trong bảng tuần hoàn?", ["Chu kì 3, nhóm IIA", "Chu kì 2, nhóm IIIA", "Chu kì 3, nhóm IIB", "Chu kì 4, nhóm IIA"], 0],
+            [1, "Trong một chu kì, theo chiều tăng dần của điện tích hạt nhân, bán kính nguyên tử nói chung:", ["Giảm dần", "Tăng dần", "Không thay đổi", "Tăng rồi giảm"], 0],
+            [1, "Trong một nhóm A, theo chiều từ trên xuống dưới (Z tăng), tính kim loại của các nguyên tố:", ["Tăng dần", "Giảm dần", "Không đổi", "Biến đổi không quy luật"], 0],
+            [1, "Nguyên tố có độ âm điện lớn nhất trong bảng tuần hoàn là:", ["Fluorine (F)", "Oxygen (O)", "Chlorine (Cl)", "Francium (Fr)"], 0],
+            [1, "Nguyên tố R thuộc nhóm VA trong bảng tuần hoàn. Công thức oxide cao nhất của R là:", ["R2O5", "RO2", "R2O3", "RO3"], 0],
+            [1, "Nguyên tố sulfur (S) thuộc nhóm VIA. Công thức oxide cao nhất và hợp chất khí với hydrogen của S là:", ["SO3 và H2S", "SO2 và H2S", "SO3 và H2SO4", "S2O6 và H2S"], 0],
+            [1, "Trong dãy các hydroxide: NaOH, Mg(OH)2, Al(OH)3, chất có tính base mạnh nhất là:", ["NaOH", "Mg(OH)2", "Al(OH)3", "Cả 3 chất bằng nhau"], 0],
+            [1, "Trong dãy các acid: H2SiO3, H3PO4, H2SO4, HClO4, chất có tính acid mạnh nhất là:", ["HClO4", "H2SO4", "H3PO4", "H2SiO3"], 0],
+            [1, "Nguyên tử nguyên tố X có cấu hình electron 1s2 2s2 2p6 3s2 3p3. Vị trí của X trong bảng tuần hoàn là:", ["Ô 15, chu kì 3, nhóm VA", "Ô 15, chu kì 3, nhóm IIIA", "Ô 13, chu kì 3, nhóm VA", "Ô 15, chu kì 5, nhóm IIIA"], 0],
+
+            // ==================== LỚP 10 - BÀI 3: LIÊN KẾT HÓA HỌC (15 CÂU) ====================
+            [2, "Theo quy tắc octet, các nguyên tử có xu hướng đạt cấu hình bền vững của khí hiếm với bao nhiêu electron lớp ngoài cùng (trừ He)?", ["8 electron", "6 electron", "2 electron", "10 electron"], 0],
+            [2, "Khi hình thành liên kết hóa học, nguyên tử potassium (K, Z = 19) có xu hướng:", ["Nhường 1 electron tạo ion K^+", "Nhận 1 electron tạo ion K^-", "Nhường 2 electron tạo ion K^{2+}", "Nhận 7 electron"], 0],
+            [2, "Khi hình thành liên kết ion, nguyên tử oxygen (O, Z = 8) có xu hướng:", ["Nhận 2 electron tạo ion O^{2-}", "Nhường 2 electron tạo ion O^{2+}", "Nhận 6 electron", "Nhường 6 electron"], 0],
+            [2, "Liên kết ion là liên kết được hình thành bởi lực hút tĩnh điện giữa:", ["Các ion mang điện tích trái dấu", "Các nguyên tử phi kim giống nhau", "Các cặp electron dùng chung", "Hạt nhân và lớp vỏ electron"], 0],
+            [2, "Hợp chất nào sau đây chứa liên kết ion?", ["NaCl", "HCl", "NH3", "CH4"], 0],
+            [2, "Liên kết cộng hóa trị được hình thành giữa hai nguyên tử bằng:", ["Một hay nhiều cặp electron dùng chung", "Sự nhường và nhận electron hoàn toàn", "Lực hút tĩnh điện giữa các ion", "Các electron tự do"], 0],
+            [2, "Phân tử nào sau đây chứa liên kết cộng hóa trị không phân cực?", ["N2", "HCl", "H2O", "NH3"], 0],
+            [2, "Phân tử nào sau đây có liên kết ba bền vững trong phân tử?", ["N2", "O2", "Cl2", "H2"], 0],
+            [2, "Trong phân tử ethylene (C2H4), liên kết đôi C=C gồm:", ["1 liên kết σ và 1 liên kết π", "2 liên kết σ", "2 liên kết π", "1 liên kết σ và 2 liên kết π"], 0],
+            [2, "Trong ion ammonium (NH4^+), số lượng liên kết cộng hóa trị có trong ion là:", ["4", "3", "5", "2"], 0],
+            [2, "Trong dãy các hợp chất: HF, HCl, HBr, HI, hợp chất tạo được liên kết hydrogen liên phân tử mạnh nhất là:", ["HF", "HCl", "HBr", "HI"], 0],
+            [2, "Nhiệt độ sôi của ethanol (C2H5OH) cao hơn hẳn dimethyl ether (CH3OCH3) là do giữa các phân tử ethanol có:", ["Liên kết hydrogen liên phân tử", "Liên kết ion bền vững", "Liên kết kim loại", "Phân tử khối lớn hơn"], 0],
+            [2, "Ở điều kiện thường, các hợp chất ion như NaCl, CaCl2 thường tồn tại ở trạng thái:", ["Rắn, tinh thể", "Khí", "Lỏng", "Hơi"], 0],
+            [2, "Tương tác van der Waals giữa các phân tử halogen tăng dần theo thứ tự F2 < Cl2 < Br2 < I2 dẫn đến:", ["Nhiệt độ sôi tăng dần từ F2 đến I2", "Nhiệt độ sôi giảm dần từ F2 đến I2", "Tính oxi hóa tăng dần", "Độ âm điện tăng dần"], 0],
+            [2, "Hợp chất nào sau đây vừa có liên kết ion, vừa có liên kết cộng hóa trị trong phân tử?", ["NH4Cl", "NaCl", "H2O", "CO2"], 0],
+
+            // ==================== LỚP 10 - BÀI 4: PHẢN ỨNG OXI HÓA - KHỬ & NĂNG LƯỢNG (15 CÂU) ====================
+            [3, "Số oxi hóa của các đơn chất (như O2, Cl2, Fe, Cu, Na) luôn bằng:", ["0", "+1", "+2", "-1"], 0],
+            [3, "Số oxi hóa của nguyên tố sulfur (S) trong phân tử H2SO4 là:", ["+6", "+4", "-2", "+2"], 0],
+            [3, "Số oxi hóa của nguyên tố manganese (Mn) trong hợp chất KMnO4 là:", ["+7", "+6", "+4", "+2"], 0],
+            [3, "Số oxi hóa của nguyên tố nitrogen (N) trong ion NO3^- là:", ["+5", "+3", "-3", "+4"], 0],
+            [3, "Số oxi hóa của nguyên tố chromium (Cr) trong muối K2Cr2O7 là:", ["+6", "+3", "+7", "+2"], 0],
+            [3, "Chất khử là chất:", ["Nhường electron và có số oxi hóa tăng", "Nhận electron và có số oxi hóa giảm", "Nhường electron và có số oxi hóa giảm", "Nhận proton trong phản ứng"], 0],
+            [3, "Chất oxi hóa là chất:", ["Nhận electron và có số oxi hóa giảm", "Nhường electron và có số oxi hóa tăng", "Không thay đổi số oxi hóa", "Cho cặp electron dùng chung"], 0],
+            [3, "Quá trình oxi hóa là:", ["Quá trình chất khử nhường electron", "Quá trình chất oxi hóa nhận electron", "Quá trình giảm số oxi hóa", "Quá trình kết hợp giữa các ion"], 0],
+            [3, "Trong phản ứng: Zn + CuSO4 → ZnSO4 + Cu, chất đóng vai trò chất khử là:", ["Zn", "CuSO4", "ZnSO4", "Cu"], 0],
+            [3, "Trong phản ứng: Fe2O3 + 3CO → 2Fe + 3CO2, chất đóng vai trò chất oxi hóa là:", ["Fe2O3", "CO", "Fe", "CO2"], 0],
+            [3, "Phản ứng nào sau đây là phản ứng oxi hóa - khử?", ["2Na + Cl2 → 2NaCl", "CaCO3 → CaO + CO2", "NaOH + HCl → NaCl + H2O", "BaCl2 + Na2SO4 → BaSO4 + 2NaCl"], 0],
+            [3, "Phản ứng tỏa nhiệt là phản ứng hóa học có biến thiên enthalpy chuẩn (ΔrH°298):", ["Nhỏ hơn 0 (ΔrH°298 < 0)", "Lớn hơn 0 (ΔrH°298 > 0)", "Bằng 0 (ΔrH°298 = 0)", "Luôn bằng 100 kJ"], 0],
+            [3, "Phản ứng thu nhiệt là phản ứng trong đó:", ["Hệ hấp thụ nhiệt năng từ môi trường (ΔrH°298 > 0)", "Hệ giải phóng nhiệt năng ra môi trường (ΔrH°298 < 0)", "Nhiệt độ môi trường xung quanh tăng mạnh", "Không có sự trao đổi năng lượng"], 0],
+            [3, "Quá trình nào sau đây là phản ứng thu nhiệt?", ["Nung đá vôi CaCO3 tạo CaO và CO2", "Đốt cháy khí methane (CH4)", "Đốt cháy cồn ethanol (C2H5OH)", "Phản ứng trung hòa NaOH và HCl"], 0],
+            [3, "Enthalpy tạo thành chuẩn (ΔfH°298) của các đơn chất ở dạng bền vững nhất bằng:", ["0 kJ/mol", "100 kJ/mol", "298 kJ/mol", "-273 kJ/mol"], 0],
+
+            // ==================== LỚP 10 - BÀI 5: NHÓM HALOGEN (15 CÂU) ====================
+            [4, "Cấu hình electron lớp ngoài cùng chung của các nguyên tử nguyên tố nhóm Halogen (VIIA) là:", ["ns2 np5", "ns2 np6", "ns2 np4", "ns1"], 0],
+            [4, "Ở điều kiện thường, đơn chất halogen tồn tại ở trạng thái lỏng, màu nâu đỏ là:", ["Bromine (Br2)", "Fluorine (F2)", "Chlorine (Cl2)", "Iodine (I2)"], 0],
+            [4, "Ở điều kiện thường, đơn chất chlorine (Cl2) là chất khí có màu:", ["Vàng lục", "Nâu đỏ", "Tím đen", "Không màu"], 0],
+            [4, "Đơn chất halogen nào sau đây có hiện tượng thăng hoa khi đun nóng ở áp suất thường?", ["Iodine (I2)", "Chlorine (Cl2)", "Bromine (Br2)", "Fluorine (F2)"], 0],
+            [4, "Tính chất hóa học đặc trưng của các đơn chất halogen (F2, Cl2, Br2, I2) là:", ["Tính oxi hóa mạnh", "Tính khử mạnh", "Tính base mạnh", "Tính lưỡng tính"], 0],
+            [4, "Theo chiều từ F2 → Cl2 → Br2 → I2, tính oxi hóa của các đơn chất halogen biến đổi như thế nào?", ["Giảm dần", "Tăng dần", "Không đổi", "Giảm rồi tăng"], 0],
+            [4, "Nước Javel được điều chế bằng cách dẫn khí Cl2 vào dung dịch NaOH loãng, nguội gồm hai muối nào?", ["NaCl và NaClO", "NaCl và NaClO3", "NaClO và NaClO3", "NaCl và NaClO4"], 0],
+            [4, "Trong phản ứng của Cl2 với H2O: Cl2 + H2O ⇌ HCl + HClO, chlorine đóng vai trò là:", ["Vừa là chất oxi hóa, vừa là chất khử", "Chỉ là chất oxi hóa", "Chỉ là chất khử", "Môi trường phản ứng"], 0],
+            [4, "Dãy các hydrohalic acid sắp xếp theo chiều tính acid tăng dần là:", ["HF < HCl < HBr < HI", "HI < HBr < HCl < HF", "HCl < HF < HBr < HI", "HF < HBr < HCl < HI"], 0],
+            [4, "Dung dịch hydrohalic acid nào sau đây có khả năng ăn mòn thủy tinh (SiO2)?", ["Hydrofluoric acid (HF)", "Hydrochloric acid (HCl)", "Hydrobromic acid (HBr)", "Hydroiodic acid (HI)"], 0],
+            [4, "Trong dãy các ion halide: F^-, Cl^-, Br^-, I^-, ion có tính khử mạnh nhất là:", ["I^-", "Br^-", "Cl^-", "F^-"], 0],
+            [4, "Nhỏ dung dịch AgNO3 vào dung dịch NaCl thấy xuất hiện kết tủa có màu:", ["Trắng (AgCl)", "Vàng nhạt (AgBr)", "Vàng đậm (AgI)", "Xanh lam"], 0],
+            [4, "Nhỏ dung dịch AgNO3 vào dung dịch NaI thấy xuất hiện kết tủa có màu:", ["Vàng đậm (AgI)", "Trắng (AgCl)", "Không tạo kết tủa", "Đỏ gạch"], 0],
+            [4, "Muối ăn (NaCl) có bổ sung nguyên tố vi lượng giúp phòng bệnh bướu cổ thường chứa hợp chất:", ["KI hoặc KIO3", "KBr hoặc NaBr", "NaF hoặc KF", "CaCl2"], 0],
+            [4, "Trong phòng thí nghiệm, khí chlorine (Cl2) thường được điều chế bằng cách đun nóng HCl đặc với:", ["MnO2 (hoặc KMnO4)", "CaCO3", "Na2SO4", "CuO"], 0],
+
+            // ==================== LỚP 11 - BÀI 1: CÂN BẰNG HÓA HỌC (15 CÂU) ====================
+            [5, "Phản ứng thuận nghịch là phản ứng:", ["Xảy ra theo hai chiều trái ngược nhau trong cùng điều kiện", "Chỉ xảy ra theo một chiều từ chất đầu tạo sản phẩm", "Luôn giải phóng chất khí", "Hoàn toàn không phụ thuộc nhiệt độ"], 0],
+            [5, "Tại trạng thái cân bằng hóa học của một phản ứng thuận nghịch:", ["Tốc độ phản ứng thuận bằng tốc độ phản ứng nghịch (v_t = v_n)", "Phản ứng thuận và phản ứng nghịch đều dừng lại", "Nồng độ chất phản ứng luôn bằng 0", "Nồng độ chất đầu luôn bằng nồng độ sản phẩm"], 0],
+            [5, "Hằng số cân bằng (K_c) của một phản ứng thuận nghịch chỉ phụ thuộc vào:", ["Nhiệt độ và bản chất của phản ứng", "Nồng độ ban đầu của các chất", "Áp suất của hệ phản ứng", "Chất xúc tác"], 0],
+            [5, "Cho cân bằng: N2(g) + 3H2(g) ⇌ 2NH3(g). Biểu thức hằng số cân bằng K_c của phản ứng là:", ["[NH3]^2 / ([N2].[H2]^3)", "([N2].[H2]^3) / [NH3]^2", "[NH3] / ([N2].[H2])", "2[NH3] / ([N2].3[H2])"], 0],
+            [5, "Yếu tố nào sau đây KHÔNG làm chuyển dịch cân bằng hóa học của một hệ đang ở trạng thái cân bằng?", ["Chất xúc tác", "Nồng độ", "Nhiệt độ", "Áp suất (đối với phản ứng có chất khí)"], 0],
+            [5, "Theo thuyết Brønsted - Lowry, acid là chất:", ["Cho proton (H^+)", "Nhận proton (H^+)", "Cho cặp electron", "Phân li ra ion OH^-"], 0],
+            [5, "Theo thuyết Brønsted - Lowry, base là chất:", ["Nhận proton (H^+)", "Cho proton (H^+)", "Chỉ chứa nhóm OH trong phân tử", "Không tan trong nước"], 0],
+            [5, "Chất nào sau đây là chất điện li mạnh trong nước?", ["NaOH", "CH3COOH", "HF", "H2O"], 0],
+            [5, "Chất nào sau đây là chất điện li yếu trong nước?", ["CH3COOH (acetic acid)", "HCl", "HNO3", "K2SO4"], 0],
+            [5, "Trong cân bằng: NH3 + H2O ⇌ NH4^+ + OH^-, phân tử NH3 đóng vai trò là:", ["Base", "Acid", "Chất oxi hóa", "Chất khử"], 0],
+            [5, "Ion hoặc phân tử nào sau đây có tính chất lưỡng tính theo thuyết Brønsted - Lowry?", ["HCO3^-", "CO3^{2-}", "Cl^-", "Na^+"], 0],
+            [5, "Dung dịch có nồng độ ion [H^+] = 10^{-3} M có giá trị pH bằng:", ["3", "11", "-3", "7"], 0],
+            [5, "Ở 25°C, một dung dịch có pH = 12 thì môi trường của dung dịch là:", ["Kiềm (base)", "Acid", "Trung tính", "Không xác định"], 0],
+            [5, "Khi nhỏ vài giọt dung dịch phenolphthalein vào dung dịch NaOH, dung dịch chuyển sang màu:", ["Hồng", "Xanh lam", "Đỏ", "Không màu"], 0],
+            [5, "Khi tăng nhiệt độ của một hệ cân bằng, cân bằng sẽ chuyển dịch theo chiều:", ["Phản ứng thu nhiệt (ΔrH°298 > 0)", "Phản ứng tỏa nhiệt (ΔrH°298 < 0)", "Tăng áp suất", "Không chuyển dịch"], 0],
+
+            // ==================== LỚP 11 - BÀI 2: NITROGEN VÀ SULFUR (15 CÂU) ====================
+            [6, "Ở nhiệt độ thường, khí nitrogen (N2) khá trơ về mặt hóa học là do:", ["Phân tử N2 có liên kết ba N≡N rất bền", "Nitrogen có độ âm điện nhỏ nhất", "Phân tử N2 có khối lượng phân tử lớn", "Nguyên tử N có bán kính rất lớn"], 0],
+            [6, "Trong phản ứng tổng hợp ammonia: N2 + 3H2 ⇌ 2NH3, khí N2 thể hiện:", ["Tính oxi hóa", "Tính khử", "Tính base", "Tính acid"], 0],
+            [6, "Phân tử ammonia (NH3) có dạng hình học không gian nào sau đây?", ["Chóp tam giác", "Tứ diện đều", "Tam giác phẳng", "Đường thẳng"], 0],
+            [6, "Khí ammonia (NH3) làm giấy quỳ tím ẩm chuyển sang màu:", ["Xanh", "Đỏ", "Hồng", "Không đổi màu"], 0],
+            [6, "Để nhận biết ion ammonium (NH4^+) trong dung dịch muối, ta đun nóng dung dịch với:", ["Dung dịch kiềm mạnh (NaOH, KOH)", "Dung dịch HCl", "Dung dịch BaCl2", "Dung dịch AgNO3"], 0],
+            [6, "Hiện tượng phú dưỡng ở ao hồ xảy ra do dư thừa chất dinh dưỡng chứa nguyên tố nào?", ["Nitrogen (N) và Phosphorus (P)", "Sodium (Na) và Potassium (K)", "Calcium (Ca) và Magnesium (Mg)", "Chlorine (Cl) và Bromine (Br)"], 0],
+            [6, "Kim loại nào sau đây bị thụ động hóa trong dung dịch HNO3 đặc, nguội và H2SO4 đặc, nguội?", ["Al, Fe, Cr", "Cu, Ag, Zn", "Na, K, Ca", "Mg, Zn, Pb"], 0],
+            [6, "Các khí nào sau đây là tác nhân chính gây ra hiện tượng mưa acid?", ["SO2 và NOx", "CO2 và CH4", "N2 và O2", "H2 và He"], 0],
+            [6, "Trong phân tử sulfur dioxide (SO2), nguyên tố S có số oxi hóa +4 nên SO2 có tính chất:", ["Vừa có tính oxi hóa, vừa có tính khử", "Chỉ có tính oxi hóa", "Chỉ có tính khử", "Hoàn toàn trơ về mặt hóa học"], 0],
+            [6, "Khi pha loãng dung dịch H2SO4 đặc, quy tắc an toàn bắt buộc là:", ["Rót từ từ H2SO4 đặc vào nước và khuấy đều", "Rót từ từ nước vào H2SO4 đặc", "Đổ nhanh nước vào bình chứa H2SO4 đặc", "Đun sôi nước rồi đổ vào H2SO4 đặc"], 0],
+            [6, "Dung dịch H2SO4 đặc có tính háo nước mạnh, khi tiếp xúc với đường saccharose (C12H22O11) sẽ tạo thành chất rắn màu đen là:", ["Carbon (C)", "Sulfur (S)", "Copper(II) oxide (CuO)", "Iron(II) sulfide (FeS)"], 0],
+            [6, "Cho Cu tác dụng với dung dịch H2SO4 đặc, nóng thu được muối CuSO4, H2O và khí không màu, mùi hắc là:", ["SO2", "H2", "H2S", "O2"], 0],
+            [6, "Thuốc thử dùng để nhận biết ion sulfate (SO4^{2-}) trong dung dịch là:", ["Ion Ba^{2+} (dung dịch BaCl2, Ba(NO3)2)", "Ion Ag^+", "Dung dịch NaOH", "Quỳ tím"], 0],
+            [6, "Kết tủa tạo thành khi cho dung dịch BaCl2 tác dụng với dung dịch Na2SO4 có công thức là:", ["BaSO4 (màu trắng, không tan trong acid)", "BaSO3", "NaCl", "Ba(OH)2"], 0],
+            [6, "Trong công nghiệp, sulfuric acid (H2SO4) được sản xuất bằng phương pháp tiếp xúc đi từ nguyên liệu:", ["Quặng pyrite (FeS2) hoặc sulfur (S)", "Muối ăn (NaCl)", "Đá vôi (CaCO3)", "Quặng bauxite (Al2O3)"], 0],
+
+            // ==================== LỚP 11 - BÀI 3: ĐẠI CƯƠNG HỮU CƠ & HYDROCARBON (15 CÂU) ====================
+            [7, "Hợp chất nào sau đây là hợp chất hữu cơ?", ["CH4", "CO2", "Na2CO3", "Al4C3"], 0],
+            [7, "Những hợp chất hữu cơ có thành phần phân tử hơn kém nhau một hay nhiều nhóm CH2 nhưng có tính chất hóa học tương tự nhau là:", ["Các chất đồng đẳng", "Các chất đồng phân", "Các dạng thù hình", "Các đồng vị"], 0],
+            [7, "Công thức tổng quát của dãy đồng đẳng alkane (hydrocarbon no, mạch hở) là:", ["CnH2n+2 (n ≥ 1)", "CnH2n (n ≥ 2)", "CnH2n-2 (n ≥ 2)", "CnH2n-6 (n ≥ 6)"], 0],
+            [7, "Theo danh pháp IUPAC, alkane có công thức phân tử C3H8 có tên gọi là:", ["Propane", "Ethane", "Butane", "Methane"], 0],
+            [7, "Theo danh pháp thay thế IUPAC, alkane CH3-CH(CH3)-CH3 có tên gọi là:", ["2-methylpropane", "Butane", "1-methylpropane", "2-methylbutane"], 0],
+            [7, "Phản ứng hóa học đặc trưng của các alkane là:", ["Phản ứng thế (halogen hóa), tách và oxi hóa", "Phản ứng cộng", "Phản ứng trùng hợp", "Phản ứng tráng bạc"], 0],
+            [7, "Hợp chất hữu cơ CH2=CH2 có tên gọi theo danh pháp IUPAC là:", ["Ethene (ethylene)", "Ethyne", "Ethane", "Propene"], 0],
+            [7, "Chất nào sau đây có đồng phân hình học (cis - trans)?", ["CH3-CH=CH-CH3 (but-2-ene)", "CH2=CH-CH2-CH3 (but-1-ene)", "CH2=CH2 (ethene)", "CH2=C(CH3)2"], 0],
+            [7, "Phản ứng hóa học đặc trưng của alkene và alkyne là:", ["Phản ứng cộng", "Phản ứng thế", "Phản ứng thủy phân", "Phản ứng xà phòng hóa"], 0],
+            [7, "Theo quy tắc Markovnikov, khi cộng HBr vào propene (CH2=CH-CH3), sản phẩm chính thu được là:", ["CH3-CHBr-CH3 (2-bromopropane)", "CH2Br-CH2-CH3 (1-bromopropane)", "CH3-CH2-CH3", "CHBr2-CH2-CH3"], 0],
+            [7, "Khí nào sau đây làm mất màu dung dịch nước bromine (Br2) ở điều kiện thường?", ["Ethene (C2H4)", "Methane (CH4)", "Ethane (C2H6)", "Propane (C3H8)"], 0],
+            [7, "Alkyne nào sau đây tác dụng với dung dịch AgNO3 trong NH3 tạo kết tủa màu vàng nhạt?", ["Ethyne (CH≡CH)", "But-2-yne (CH3-C≡C-CH3)", "Ethene (CH2=CH2)", "Ethane (CH3-CH3)"], 0],
+            [7, "Công thức phân tử của benzene là:", ["C6H6", "C7H8", "C8H10", "C6H12"], 0],
+            [7, "Hydrocarbon thơm C6H5-CH3 có tên gọi thông thường và IUPAC là:", ["Toluene (methylbenzene)", "Styrene", "Xylene", "Naphthalene"], 0],
+            [7, "Khi đun nóng toluene với dung dịch KMnO4, hiện tượng quan sát được là:", ["Dung dịch KMnO4 mất màu tím và có kết tủa nâu đen MnO2", "Không có hiện tượng gì xảy ra", "Xuất hiện kết tủa trắng", "Dung dịch chuyển sang màu xanh lam"], 0],
+
+            // ==================== LỚP 11 - BÀI 4: DẪN XUẤT HALOGEN - ALCOHOL - PHENOL (15 CÂU) ====================
+            [8, "Hợp chất nào sau đây thuộc loại dẫn xuất halogen của hydrocarbon?", ["CH3CH2Cl (chloroethane)", "C2H5OH", "CH3COOH", "C6H5NH2"], 0],
+            [8, "Đun nóng ethyl chloride (C2H5Cl) với dung dịch NaOH loãng thu được alcohol nào sau đây?", ["Ethanol (C2H5OH)", "Methanol (CH3OH)", "Ethene (C2H4)", "Phenol (C6H5OH)"], 0],
+            [8, "Công thức cấu tạo của ethanol là:", ["CH3-CH2-OH", "CH3-OH", "CH3-O-CH3", "CH3-CHO"], 0],
+            [8, "Alcohol CH3-CH(OH)-CH3 có tên gọi theo danh pháp thay thế IUPAC là:", ["Propan-2-ol", "Propan-1-ol", "Ethanol", "Butan-2-ol"], 0],
+            [8, "Trong phân tử propan-2-ol (CH3-CH(OH)-CH3), bậc của alcohol là:", ["Bậc II", "Bậc I", "Bậc III", "Bậc IV"], 0],
+            [8, "Hợp chất HO-CH2-CH2-OH có tên gọi thông thường là:", ["Ethylene glycol", "Glycerol", "Ethanol", "Sorbitol"], 0],
+            [8, "Polyalcohol nào sau đây hòa tan được Cu(OH)2 ở nhiệt độ thường tạo dung dịch màu xanh lam thẫm?", ["Glycerol (C3H5(OH)3)", "Ethanol (C2H5OH)", "Methanol (CH3OH)", "Propan-1,3-diol"], 0],
+            [8, "Oxi hóa không hoàn toàn alcohol bậc I (R-CH2OH) bằng CuO đun nóng thu được sản phẩm hữu cơ là:", ["Aldehyde (R-CHO)", "Ketone", "Ester", "Alkane"], 0],
+            [8, "Oxi hóa không hoàn toàn propan-2-ol (CH3-CH(OH)-CH3) bằng CuO đun nóng thu được:", ["Acetone (CH3-CO-CH3)", "Propanal (CH3-CH2-CHO)", "Propionic acid", "Propene"], 0],
+            [8, "Đun nóng ethanol với H2SO4 đặc ở 170°C thu được khí chủ yếu là:", ["Ethene (CH2=CH2)", "Diethyl ether", "Ethane", "Methane"], 0],
+            [8, "Phenol (C6H5OH) là hợp chất hữu cơ trong phân tử có:", ["Nhóm -OH liên kết trực tiếp với nguyên tử carbon của vòng benzene", "Nhóm -OH liên kết với gốc alkyl no", "Nhóm -CHO liên kết với vòng benzene", "Nhóm -COOH liên kết với vòng benzene"], 0],
+            [8, "Dung dịch phenol (C6H5OH) trong nước có tính acid rất yếu nên:", ["Không làm đổi màu quỳ tím", "Làm quỳ tím hóa đỏ", "Làm quỳ tím hóa xanh", "Làm hồng phenolphthalein"], 0],
+            [8, "Phenol phản ứng được với dung dịch nào sau đây để tạo thành muối sodium phenolate (C6H5ONa)?", ["Dung dịch NaOH", "Dung dịch NaCl", "Dung dịch HCl", "Dung dịch NaHCO3"], 0],
+            [8, "Nhỏ nước bromine (Br2) vào dung dịch phenol (C6H5OH), hiện tượng quan sát được là:", ["Mất màu nước Br2 và xuất hiện kết tủa trắng (2,4,6-tribromophenol)", "Xuất hiện kết tủa màu vàng", "Có khí không màu thoát ra", "Dung dịch chuyển sang màu tím"], 0],
+            [8, "Phản ứng giữa phenol với dung dịch HNO3 đặc (xúc tác H2SO4 đặc) tạo kết tủa màu vàng có tên là:", ["Picric acid (2,4,6-trinitrophenol)", "Nitrobenzene", "Benzoic acid", "Aniline"], 0],
+
+            // ==================== LỚP 11 - BÀI 5: HỢP CHẤT CARBONYL & CARBOXYLIC ACID (15 CÂU) ====================
+            [9, "Nhóm chức của hợp chất aldehyde có công thức là:", ["-CHO", "-OH", "-COOH", "-NH2"], 0],
+            [9, "Theo danh pháp thay thế IUPAC, hợp chất HCHO có tên gọi là:", ["Methanal (formaldehyde)", "Ethanal", "Propanal", "Methanoic acid"], 0],
+            [9, "Theo danh pháp thay thế IUPAC, hợp chất CH3CHO có tên gọi là:", ["Ethanal (acetaldehyde)", "Methanal", "Propanone", "Ethanol"], 0],
+            [9, "Hợp chất CH3-CO-CH3 thuộc loại ketone và có tên gọi IUPAC là:", ["Propanone (acetone)", "Propanal", "Butanone", "Ethanal"], 0],
+            [9, "Chất nào sau đây tham gia phản ứng tráng bạc khi đun nóng với thuốc thử Tollens [Ag(NH3)2]OH?", ["CH3CHO (ethanal)", "CH3COCH3 (acetone)", "C2H5OH (ethanol)", "CH3COOH (acetic acid)"], 0],
+            [9, "Đun nóng ethanal (CH3CHO) với Cu(OH)2 trong môi trường kiềm (NaOH) tạo ra kết tủa có màu:", ["Đỏ gạch (Cu2O)", "Xanh lam", "Trắng", "Vàng nhạt"], 0],
+            [9, "Khử ethanal (CH3CHO) bằng H2 (xúc tác Ni, t°) hoặc LiAlH4 thu được sản phẩm là:", ["Ethanol (CH3CH2OH)", "Acetic acid (CH3COOH)", "Ethane (C2H6)", "Methanol (CH3OH)"], 0],
+            [9, "Hợp chất carbonyl nào sau đây phản ứng với I2 trong dung dịch NaOH tạo kết tủa màu vàng (iodoform CHI3)?", ["CH3COCH3 (acetone)", "HCHO (methanal)", "CH3CH2CHO (propanal)", "C2H5OH"], 0],
+            [9, "Nhóm chức đặc trưng của carboxylic acid là:", ["-COOH (nhóm carboxyl)", "-CHO (nhóm carbaldehyde)", "-OH (nhóm hydroxyl)", "-COO- (nhóm ester)"], 0],
+            [9, "Công thức cấu tạo của acetic acid (ethanoic acid) là:", ["CH3COOH", "HCOOH", "C2H5COOH", "CH2=CHCOOH"], 0],
+            [9, "Trong giấm ăn có chứa carboxylic acid nào sau đây với nồng độ khoảng 2% - 5%?", ["Acetic acid (CH3COOH)", "Formic acid (HCOOH)", "Oxalic acid ((COOH)2)", "Benzoic acid (C6H5COOH)"], 0],
+            [9, "Dãy các chất sắp xếp theo chiều nhiệt độ sôi tăng dần là:", ["CH3CHO < C2H5OH < CH3COOH", "CH3COOH < C2H5OH < CH3CHO", "C2H5OH < CH3CHO < CH3COOH", "CH3CHO < CH3COOH < C2H5OH"], 0],
+            [9, "Cho acetic acid (CH3COOH) tác dụng với đá vôi (CaCO3), khí không màu thoát ra là:", ["CO2", "H2", "CO", "O2"], 0],
+            [9, "Đun nóng hỗn hợp gồm acetic acid (CH3COOH) và ethanol (C2H5OH) có mặt H2SO4 đặc làm xúc tác thu được ester là:", ["Ethyl acetate (CH3COOC2H5)", "Methyl acetate (CH3COOCH3)", "Ethyl formate (HCOOC2H5)", "Diethyl ether"], 0],
+            [9, "Vai trò của H2SO4 đặc trong phản ứng ester hóa giữa CH3COOH và C2H5OH là:", ["Vừa làm chất xúc tác, vừa hút nước làm cân bằng chuyển dịch theo chiều thuận", "Làm chất oxi hóa mạnh", "Cung cấp nguyên tử oxygen cho ester", "Làm chất chỉ thị màu"], 0],
+
+            // ==================== LỚP 12 - BÀI 1: ESTER - LIPID (15 CÂU) ====================
+            [10, "Công thức tổng quát của ester no, đơn chức, mạch hở là:", ["CnH2nO2 (n ≥ 2)", "CnH2nO2 (n ≥ 1)", "CnH2n-2O2 (n ≥ 3)", "CnH2n+2O2 (n ≥ 2)"], 0],
+            [10, "Hợp chất nào sau đây thuộc loại ester?", ["CH3COOC2H5 (ethyl acetate)", "CH3COOH (acetic acid)", "C2H5OH (ethanol)", "CH3COCH3 (acetone)"], 0],
+            [10, "Ester HCOOCH3 có tên gọi theo danh pháp IUPAC là:", ["Methyl formate (methyl methanoate)", "Ethyl formate", "Methyl acetate", "Ethyl acetate"], 0],
+            [10, "Ester CH3COOCH=CH2 có tên gọi là:", ["Vinyl acetate", "Methyl acrylate", "Ethyl acetate", "Allyl acetate"], 0],
+            [10, "Ester nào sau đây có mùi thơm đặc trưng của chuối chín?", ["Isoamyl acetate", "Ethyl butyrate", "Benzyl acetate", "Geranyl acetate"], 0],
+            [10, "Thủy phân hoàn toàn ester trong dung dịch kiềm (NaOH, KOH) đun nóng được gọi là phản ứng:", ["Xà phòng hóa", "Ester hóa", "Trùng ngưng", "Hydrogen hóa"], 0],
+            [10, "Thủy phân ester trong môi trường acid (H2SO4 loãng, t°) có đặc điểm là:", ["Phản ứng thuận nghịch (không hoàn toàn)", "Phản ứng một chiều hoàn toàn", "Luôn tạo ra muối của carboxylic acid", "Không cần đun nóng"], 0],
+            [10, "Đun nóng ethyl acetate (CH3COOC2H5) với dung dịch NaOH thu được các sản phẩm là:", ["CH3COONa và C2H5OH", "CH3COOH và C2H5ONa", "HCOONa và C2H5OH", "CH3COONa và CH3OH"], 0],
+            [10, "Thủy phân vinyl acetate (CH3COOCH=CH2) trong dung dịch NaOH đun nóng thu được:", ["CH3COONa và CH3CHO", "CH3COONa và CH2=CHOH", "CH3COOH và CH3CHO", "CH3COONa và C2H5OH"], 0],
+            [10, "Chất béo là triester của glycerol (C3H5(OH)3) với:", ["Các acid béo", "Các α-amino acid", "Các alcohol đơn chức", "Các acid vô cơ"], 0],
+            [10, "Công thức cấu tạo của tristearin là:", ["(C17H35COO)3C3H5", "(C17H33COO)3C3H5", "(C15H31COO)3C3H5", "(C17H31COO)3C3H5"], 0],
+            [10, "Ở điều kiện thường, chất béo nào sau đây tồn tại ở trạng thái lỏng?", ["Triolein ((C17H33COO)3C3H5)", "Tristearin ((C17H35COO)3C3H5)", "Tripalmitin ((C15H31COO)3C3H5)", "Stearic acid (C17H35COOH)"], 0],
+            [10, "Để chuyển hóa chất béo lỏng (dầu thực vật) thành chất béo rắn (bơ nhân tạo), người ta thực hiện phản ứng:", ["Hydrogen hóa (cộng H2 có xúc tác Ni, t°)", "Xà phòng hóa với NaOH", "Thủy phân trong môi trường acid", "Đề hydrogen hóa"], 0],
+            [10, "Acid béo omega-3 và omega-6 là các acid béo không no thiết yếu có chứa các liên kết đôi ở vị trí:", ["Carbon số 3 và số 6 tính từ nhóm methyl (-CH3) cuối mạch", "Carbon số 1 tính từ nhóm -COOH", "Ngoài vòng thơm benzene", "Chỉ có trong mỡ động vật"], 0],
+            [10, "Thành phần chính của xà phòng là:", ["Muối sodium hoặc potassium của acid béo", "Muối calcium của acid béo", "Glycerol nguyên chất", "Các hydrocarbon mạch dài"], 0],
+
+            // ==================== LỚP 12 - BÀI 2: CARBOHYDRATE (15 CÂU) ====================
+            [11, "Carbohydrate nào sau đây thuộc loại monosaccharide (không bị thủy phân)?", ["Glucose và Fructose", "Saccharose và Maltose", "Tinh bột và Cellulose", "Saccharose và Glucose"], 0],
+            [11, "Công thức phân tử của glucose và fructose đều là:", ["C6H12O6", "C12H22O11", "(C6H10O5)n", "C6H14O6"], 0],
+            [11, "Trong máu người trưởng thành khỏe mạnh lúc đói, nồng độ glucose được duy trì ổn định khoảng:", ["4,4 - 7,2 mmol/L (khoảng 0,1%)", "10%", "1%", "0,001%"], 0],
+            [11, "Ở dạng mạch hở, phân tử glucose có cấu tạo gồm:", ["5 nhóm hydroxy (-OH) và 1 nhóm aldehyde (-CHO)", "5 nhóm hydroxy (-OH) và 1 nhóm ketone (-CO-)", "6 nhóm hydroxy (-OH)", "4 nhóm -OH và 2 nhóm -CHO"], 0],
+            [11, "Glucose hòa tan được Cu(OH)2 ở nhiệt độ thường tạo phức đồng màu xanh lam thẫm chứng tỏ glucose có:", ["Nhiều nhóm -OH liền kề nhau", "Nhóm chức aldehyde -CHO", "Mạch carbon không phân nhánh", "Khối lượng phân tử lớn"], 0],
+            [11, "Khử hoàn toàn glucose (C6H12O6) bằng khí H2 (xúc tác Ni, t°) thu được polyalcohol có tên là:", ["Sorbitol (C6H14O6)", "Glycerol (C3H8O3)", "Ethanol (C2H5OH)", "Gluconic acid"], 0],
+            [11, "Thuốc thử nào sau đây dùng để phân biệt dung dịch glucose và dung dịch fructose?", ["Nước bromine (Br2)", "Thuốc thử Tollens [Ag(NH3)2]OH", "Cu(OH)2 ở nhiệt độ thường", "Dung dịch NaOH"], 0],
+            [11, "Carbohydrate nào sau đây thuộc loại disaccharide?", ["Saccharose (C12H22O11)", "Glucose (C6H12O6)", "Cellulose ((C6H10O5)n)", "Fructose (C6H12O6)"], 0],
+            [11, "Phân tử saccharose được cấu tạo từ hai đơn vị monosaccharide nào liên kết với nhau qua nguyên tử oxygen?", ["1 gốc α-glucose và 1 gốc β-fructose", "2 gốc α-glucose", "2 gốc β-glucose", "1 gốc β-glucose và 1 gốc α-fructose"], 0],
+            [11, "Thủy phân hoàn toàn saccharose trong môi trường acid đun nóng thu được:", ["Glucose và Fructose", "Chỉ có Glucose", "Chỉ có Fructose", "Maltose và Glucose"], 0],
+            [11, "Dung dịch saccharose KHÔNG có phản ứng tráng bạc với thuốc thử Tollens vì:", ["Phân tử saccharose không còn nhóm -OH hemiketal/hemiacetal tự do (không mở vòng)", "Saccharose không tan trong nước", "Saccharose không có nhóm -OH", "Saccharose là polysaccharide"], 0],
+            [11, "Tinh bột là hỗn hợp của hai polysaccharide là amylose và amylopectin, trong đó mạch phân nhánh là:", ["Amylopectin", "Amylose", "Cellulose", "Maltose"], 0],
+            [11, "Nhỏ vài giọt dung dịch iodine (I2/KI) vào hồ tinh bột ở nhiệt độ thường, hiện tượng xảy ra là:", ["Xuất hiện màu xanh tím đặc trưng", "Xuất hiện kết tủa đỏ gạch", "Sủi bọt khí không màu", "Xuất hiện kết tủa bạc sáng"], 0],
+            [11, "Phân tử cellulose được cấu tạo bởi nhiều đơn vị nào liên kết với nhau bằng liên kết β-1,4-glycoside?", ["β-glucose", "α-glucose", "β-fructose", "Saccharose"], 0],
+            [11, "Cho cellulose tác dụng với HNO3 đặc (xúc tác H2SO4 đặc, t°) thu được cellulose trinitrate dùng làm:", ["Thuốc súng không khói", "Tơ tằm tự nhiên", "Đường ăn kiêng", "Chất giặt rửa tổng hợp"], 0],
+
+            // ==================== LỚP 12 - BÀI 3: HỢP CHẤT CHỨA NITROGEN (15 CÂU) ====================
+            [12, "Hợp chất nào sau đây thuộc loại amine bậc một?", ["CH3NH2 (methylamine)", "CH3NHCH3 (dimethylamine)", "(CH3)3N (trimethylamine)", "CH3CONH2"], 0],
+            [12, "Amine thơm C6H5NH2 có tên gọi thông thường và IUPAC là:", ["Aniline (phenylamine)", "Methylamine", "Ethylamine", "Toluidine"], 0],
+            [12, "Ở điều kiện thường, các amine nào sau đây là chất khí, mùi khai, tan nhiều trong nước?", ["Methylamine, dimethylamine, trimethylamine, ethylamine", "Aniline và diphenylamine", "Glycine và alanine", "Albumin và collagen"], 0],
+            [12, "Dung dịch methylamine (CH3NH2) trong nước làm quỳ tím:", ["Chuyển sang màu xanh", "Chuyển sang màu đỏ", "Không đổi màu", "Mất màu hoàn toàn"], 0],
+            [12, "Nhỏ nước bromine (Br2) vào ống nghiệm chứa dung dịch aniline (C6H5NH2), hiện tượng xảy ra là:", ["Xuất hiện kết tủa trắng (2,4,6-tribromoaniline)", "Xuất hiện kết tủa màu xanh lam", "Có khí mùi khai thoát ra", "Dung dịch chuyển sang màu tím"], 0],
+            [12, "Amino acid là hợp chất hữu cơ tạp chức, trong phân tử chứa đồng thời:", ["Nhóm amino (-NH2) và nhóm carboxyl (-COOH)", "Nhóm hydroxy (-OH) và nhóm carboxyl (-COOH)", "Nhóm amino (-NH2) và nhóm aldehyde (-CHO)", "Nhóm ester (-COO-) và nhóm amino (-NH2)"], 0],
+            [12, "α-amino acid đơn giản nhất có công thức H2N-CH2-COOH có tên gọi thông thường là:", ["Glycine (Gly)", "Alanine (Ala)", "Valine (Val)", "Lysine (Lys)"], 0],
+            [12, "Ở điều kiện thường, các amino acid đều là chất rắn kết tinh, nhiệt độ nóng chảy cao và dễ tan trong nước vì:", ["Tồn tại chủ yếu ở dạng ion lưỡng cực", "Có phân tử khối rất lớn", "Là các hydrocarbon không phân cực", "Có liên kết ba trong phân tử"], 0],
+            [12, "Tính chất hóa học đặc trưng của các amino acid là:", ["Tính chất lưỡng tính (vừa tác dụng với acid mạnh, vừa tác dụng với base mạnh)", "Chỉ có tính acid", "Chỉ có tính base", "Không tham gia phản ứng hóa học"], 0],
+            [12, "Dung dịch amino acid nào sau đây làm quỳ tím chuyển sang màu xanh?", ["Lysine (có 2 nhóm -NH2 và 1 nhóm -COOH)", "Glutamic acid (có 1 nhóm -NH2 và 2 nhóm -COOH)", "Glycine (có 1 nhóm -NH2 và 1 nhóm -COOH)", "Alanine (có 1 nhóm -NH2 và 1 nhóm -COOH)"], 0],
+            [12, "Liên kết của nhóm -CO- với nhóm -NH- giữa hai đơn vị α-amino acid được gọi là:", ["Liên kết peptide", "Liên kết glycoside", "Liên kết hydrogen", "Liên kết ion"], 0],
+            [12, "Peptide nào sau đây tham gia phản ứng màu biuret với Cu(OH)2/OH^- tạo dung dịch màu tím đặc trưng?", ["Tripeptide trở lên (như Gly-Ala-Val)", "Dipeptide (như Gly-Ala)", "Các α-amino acid tự do", "Methylamine"], 0],
+            [12, "Thủy phân hoàn toàn protein đơn giản (như albumin, fibroin) khi đun nóng với dung dịch acid hoặc base thu được:", ["Các α-amino acid", "Các acid béo và glycerol", "Glucose và fructose", "Các amine đơn chức"], 0],
+            [12, "Hiện tượng lòng trắng trứng đông lại khi luộc chín hoặc 'gạch cua' nổi lên khi nấu canh cua là do:", ["Sự đông tụ protein bởi nhiệt độ", "Sự thủy phân protein thành amino acid", "Phản ứng màu biuret", "Sự xà phòng hóa lipid"], 0],
+            [12, "Vai trò chính của hầu hết các enzyme trong cơ thể sinh vật là:", ["Chất xúc tác sinh học có tính chọn lọc cao", "Chất dự trữ năng lượng chính", "Dung môi hòa tan các chất", "Chất truyền dẫn điện"], 0],
+
+            // ==================== LỚP 12 - BÀI 4: POLYMER (15 CÂU) ====================
+            [13, "Trùng hợp monomer ethene (CH2=CH2) ở nhiệt độ, áp suất và xúc tác thích hợp thu được polymer là:", ["Polyethylene (PE)", "Polypropylene (PP)", "Poly(vinyl chloride) (PVC)", "Polystyrene (PS)"], 0],
+            [13, "Monomer dùng để trùng hợp tạo thành poly(vinyl chloride) (PVC) có công thức là:", ["CH2=CHCl (vinyl chloride)", "CH2=CH2", "CH3-CH2Cl", "CF2=CF2"], 0],
+            [13, "Polymer nào sau đây được dùng để chế tạo thủy tinh hữu cơ (plexiglas)?", ["Poly(methyl methacrylate)", "Polyethylene (PE)", "Polystyrene (PS)", "Poly(phenol formaldehyde)"], 0],
+            [13, "Polymer nào sau đây có nguồn gốc từ thiên nhiên?", ["Tinh bột, cellulose, tơ tằm, cao su thiên nhiên", "Polyethylene (PE), PVC", "Tơ nylon-6,6, tơ nitron", "Cao su buna, cao su chloroprene"], 0],
+            [13, "Tơ visco và tơ cellulose acetate thuộc loại tơ nào sau đây?", ["Tơ bán tổng hợp (tơ nhân tạo)", "Tơ thiên nhiên", "Tơ tổng hợp hoàn toàn", "Chất dẻo nhiệt rắn"], 0],
+            [13, "Phản ứng trùng hợp là quá trình kết hợp nhiều phân tử nhỏ (monomer) giống nhau hoặc tương tự nhau thành polymer, điều kiện monomer phải có:", ["Liên kết bội (C=C) hoặc vòng kém bền", "Ít nhất hai nhóm chức có khả năng phản ứng tạo nước", "Khối lượng phân tử lớn hơn 10000", "Chỉ chứa nguyên tử carbon và hydrogen"], 0],
+            [13, "Polymer nào sau đây được điều chế bằng phản ứng trùng ngưng?", ["Nylon-6,6 (poly(hexamethylene adipamide))", "Polyethylene (PE)", "Poly(vinyl chloride) (PVC)", "Tơ nitron (olon)"], 0],
+            [13, "Tơ nitron (hay olon) bền với nhiệt, giữ nhiệt tốt nên dùng để dệt vải may quần áo ấm được trùng hợp từ:", ["Vinyl cyanide (CH2=CH-CN hay acrylonitrile)", "Caprolactam", "Hexamethylenediamine và adipic acid", "Vinyl chloride"], 0],
+            [13, "Tơ nylon-6,6 và tơ capron thuộc loại tơ polyamide, kém bền trong môi trường acid và kiềm vì trong mạch có chứa:", ["Liên kết amide (-CO-NH-) dễ bị thủy phân", "Liên kết đôi C=C", "Nhóm chức aldehyde", "Liên kết ba C≡C"], 0],
+            [13, "Cao su thiên nhiên là polymer của monomer nào sau đây?", ["Isoprene (2-methylbuta-1,3-diene)", "Buta-1,3-diene", "Chloroprene", "Styrene"], 0],
+            [13, "Cao su buna được sản xuất bằng phản ứng trùng hợp monomer nào sau đây (xúc tác Na)?", ["Buta-1,3-diene (CH2=CH-CH=CH2)", "Isoprene", "Propylene", "Ethylene"], 0],
+            [13, "Quá trình lưu hóa cao su (đun nóng cao su với sulfur S) giúp tăng tính đàn hồi và độ bền là do:", ["Tạo cầu nối disulfide (-S-S-) giữa các mạch polymer tạo mạng không gian", "Cắt nhỏ mạch polymer thành các monomer", "Chuyển cao su thành chất lỏng", "Loại bỏ hoàn toàn nguyên tử carbon"], 0],
+            [13, "Nhựa nào sau đây có tính chống dính rất tốt, bền với nhiệt và hóa chất, dùng tráng chảo chống dính?", ["Teflon (polytetrafluoroethylene - (-CF2-CF2-)n)", "Polyethylene (PE)", "Polystyrene (PS)", "PVC"], 0],
+            [13, "Keo dán bản vá săm xe là dung dịch của cao su trong dung môi hữu cơ (như xăng, toluene) thuộc loại:", ["Nhựa vá săm", "Keo dán epoxy", "Keo dán poly(urea-formaldehyde)", "Xi măng vô cơ"], 0],
+            [13, "Biện pháp nào sau đây giúp giảm thiểu ô nhiễm môi trường do rác thải nhựa (chất dẻo)?", ["Tiết giảm, tái sử dụng, phân loại tái chế và dùng vật liệu phân hủy sinh học", "Đốt toàn bộ rác thải nhựa ngoài trời", "Chôn lấp trực tiếp túi nhựa PVC xuống nguồn nước", "Tăng cường sử dụng túi nilon dùng một lần"], 0],
+
+            // ==================== LỚP 12 - BÀI 5: ĐẠI CƯƠNG KIM LOẠI & ĐIỆN HÓA HỌC (15 CÂU) ====================
+            [14, "Những tính chất vật lí chung của kim loại (dẫn điện, dẫn nhiệt, dẻo, ánh kim) gây ra bởi:", ["Các electron tự do trong mạng tinh thể kim loại", "Các ion dương kim loại tại nút mạng", "Khối lượng riêng của kim loại", "Bán kính nguyên tử của kim loại"], 0],
+            [14, "Kim loại dẫn điện và dẫn nhiệt tốt nhất trong tất cả các kim loại là:", ["Silver (Ag)", "Copper (Cu)", "Gold (Au)", "Aluminium (Al)"], 0],
+            [14, "Kim loại có tính dẻo cao nhất (dễ dát mỏng nhất) và kim loại cứng nhất lần lượt là:", ["Gold (Au) và Chromium (Cr)", "Copper (Cu) và Iron (Fe)", "Silver (Ag) và Tungsten (W)", "Aluminium (Al) và Zinc (Zn)"], 0],
+            [14, "Ở điều kiện thường (25°C), kim loại duy nhất tồn tại ở trạng thái lỏng là:", ["Mercury (Hg)", "Sodium (Na)", "Gallium (Ga)", "Lead (Pb)"], 0],
+            [14, "Tính chất hóa học chung của các kim loại là:", ["Tính khử (M → M^{n+} + ne)", "Tính oxi hóa", "Tính acid", "Tính nhận electron"], 0],
+            [14, "Trong một cặp oxi hóa - khử của kim loại (M^{n+}/M), dạng oxi hóa và dạng khử lần lượt là:", ["M^{n+} và M", "M và M^{n+}", "M và electron", "M^{n+} và electron"], 0],
+            [14, "Theo dãy thế điện cực chuẩn, thế điện cực chuẩn E°(M^{n+}/M) càng nhỏ thì:", ["Tính khử của kim loại M càng mạnh, tính oxi hóa của ion M^{n+} càng yếu", "Tính khử của kim loại M càng yếu, tính oxi hóa của ion M^{n+} càng mạnh", "Tính khử của M và tính oxi hóa của M^{n+} đều mạnh", "Kim loại M hoàn toàn không phản ứng với acid"], 0],
+            [14, "Cho biết E°(Zn^{2+}/Zn) = -0,76 V và E°(Cu^{2+}/Cu) = +0,34 V. Sức điện động chuẩn (E°_pin) của pin Galvani Zn - Cu là:", ["1,10 V", "0,42 V", "-1,10 V", "0,76 V"], 0],
+            [14, "Trong pin điện hóa (pin Galvani) Zn - Cu, tại cực âm (anode) và cực dương (cathode) xảy ra quá trình nào?", ["Anode (Zn): oxi hóa Zn → Zn^{2+} + 2e; Cathode (Cu): khử Cu^{2+} + 2e → Cu", "Anode (Cu): oxi hóa Cu; Cathode (Zn): khử Zn^{2+}", "Cả hai điện cực đều xảy ra quá trình khử", "Electron di chuyển từ cực Cu sang cực Zn"], 0],
+            [14, "Theo quy tắc alpha (α), phản ứng giữa Cu và dung dịch muối nào sau đây xảy ra được ở điều kiện thường?", ["FeCl3 (hoặc AgNO3)", "ZnSO4", "MgCl2", "AlCl3"], 0],
+            [14, "Để bảo vệ vỏ tàu biển làm bằng thép khỏi bị ăn mòn điện hóa, người ta gắn vào phần vỏ tàu chìm trong nước biển các tấm kim loại:", ["Zinc (Zn)", "Copper (Cu)", "Silver (Ag)", "Lead (Pb)"], 0],
+            [14, "Phương pháp điều chế các kim loại hoạt động hóa học mạnh như Na, K, Ca, Mg, Al trong công nghiệp là:", ["Điện phân nóng chảy hợp chất của chúng", "Điện phân dung dịch muối", "Nhiệt luyện bằng khí CO", "Thủy luyện"], 0],
+            [14, "Khi điện phân dung dịch CuSO4 với hai điện cực trơ (graphite), tại cathode (cực âm) thu được chất nào?", ["Kim loại Cu bám vào điện cực", "Khí O2 thoát ra", "Khí SO2 thoát ra", "Kim loại Na"], 0],
+            [14, "Trong phương pháp nhiệt luyện, người ta dùng chất khử (CO, H2, C, Al) ở nhiệt độ cao để khử các oxide kim loại đứng sau nguyên tố nào?", ["Đứng sau Aluminium (Al) như ZnO, Fe2O3, CuO", "Đứng trước Magnesium (Mg) như Na2O, CaO", "Tất cả các oxide kim loại kiềm", "Chỉ khử được Al2O3"], 0],
+            [14, "Hợp kim thép không gỉ (inox) bền với sự ăn mòn trong không khí có thành phần chính là sắt (Fe) kết hợp với:", ["Chromium (Cr) và Nickel (Ni)", "Sodium (Na) và Potassium (K)", "Mercury (Hg) và Lead (Pb)", "Calcium (Ca) và Barium (Ba)"], 0]
+        ];
+
+        let questions = RAW_CHEMISTRY_BANK.map((item, idx) => ({
+            id: idx + 1,
+            topic: TOPICS_LIST[item[0]],
+            text: item[1],
+            options: item[2],
+            correct: item[3],
+            image: ""
+        }));
         
+        let currentTopicFilter = "Lớp 12 - Bài 1: Ester - Lipid";
         const GRID_SIZE = 20;
         let gridData = Array(GRID_SIZE * GRID_SIZE).fill('#FFFFFF'); 
-        let palette = ['#FFFFFF', '#000000', '#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#ec4899']; 
+        let palette = ['#FFFFFF', '#000000', '#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6']; 
         let activeColor = '#000000';
         let currentTool = 'draw';
         let isDrawing = false;
 
-        // Trạng thái Game
         let gameConfig = {
-            colorsUsed: [], 
-            colorToQuestionMap: {}, 
-            questionData: [], // { qIndex, correctLetter, options: [{text, letter, isCorrect}] }
-            letterGrid: [], // Mảng 400 phần tử (A-Z)
-            studentAnswers: {} // qIndex -> selectedOptionIndex
+            colorsUsed: [],
+            colorToQuestionMap: {},
+            questionData: [],
+            letterGrid: [],
+            studentAnswers: {}
         };
 
-        // Hàm tạo lưới đối xứng gương ngang (nhận 20 hàng, mỗi hàng 10 cột trái -> tự động đối xứng sang 10 cột phải)
-        function createSymmetricalGrid(halfRows) {
+        // Hàm tự động tạo lưới 20x20 đối xứng gương tuyệt đối từ 10 cột bên trái
+        function createSymmetricalGrid(halfData) {
             const fullData = [];
             for (let r = 0; r < 20; r++) {
-                const leftHalf = halfRows[r] || [0,0,0,0,0,0,0,0,0,0];
-                const rightHalf = [...leftHalf].reverse();
-                fullData.push(...leftHalf, ...rightHalf);
+                const leftRow = halfData[r];
+                const rightRow = [...leftRow].reverse();
+                fullData.push(...leftRow, ...rightRow);
             }
             return fullData;
         }
@@ -621,6 +1207,56 @@
                     [0,0,0,0,0,0,0,0,0,0]
                 ])
             },
+            'heart_wings': {
+                colors: ['#FFFFFF', '#1E293B', '#EF4444', '#FDA4AF', '#38BDF8', '#FDE047'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,1,1,0],
+                    [0,0,0,0,0,0,1,5,5,1],
+                    [0,0,0,0,0,0,0,1,1,0],
+                    [0,1,1,0,0,1,1,1,0,0],
+                    [1,4,4,1,1,2,2,2,1,0],
+                    [1,4,4,4,1,2,3,2,2,1],
+                    [0,1,4,4,1,2,3,2,2,2],
+                    [1,4,4,4,1,2,2,2,2,2],
+                    [0,1,4,4,1,2,2,2,2,2],
+                    [0,0,1,1,1,2,2,2,2,2],
+                    [0,0,0,0,1,2,2,2,2,2],
+                    [0,0,0,0,0,1,2,2,2,2],
+                    [0,0,0,0,0,0,1,2,2,2],
+                    [0,0,0,0,0,0,0,1,2,2],
+                    [0,0,0,0,0,0,0,0,1,2],
+                    [0,0,0,0,0,0,0,0,0,1],
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0]
+                ])
+            },
+            'diamond': {
+                colors: ['#FFFFFF', '#1E293B', '#06B6D4', '#67E8F9', '#3B82F6', '#1D4ED8'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,1,1,1,1,1,1],
+                    [0,0,0,1,3,3,3,2,2,2],
+                    [0,0,1,3,3,3,1,2,2,2],
+                    [0,1,3,3,3,1,4,1,2,2],
+                    [1,1,1,1,1,1,1,1,1,1],
+                    [1,5,5,1,4,4,4,1,2,2],
+                    [0,1,5,5,1,4,4,4,1,2],
+                    [0,0,1,5,5,1,4,4,1,2],
+                    [0,0,0,1,5,5,1,4,4,1],
+                    [0,0,0,0,1,5,5,1,4,1],
+                    [0,0,0,0,0,1,5,5,1,4],
+                    [0,0,0,0,0,0,1,5,1,4],
+                    [0,0,0,0,0,0,0,1,5,1],
+                    [0,0,0,0,0,0,0,0,1,1],
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0]
+                ])
+            },
 
             // ================= MỨC 7 CÂU (7 MÀU) =================
             'owl': {
@@ -720,6 +1356,56 @@
                     [0,0,1,6,1,5,5,5,5,5],
                     [0,1,6,6,6,1,6,1,6,6],
                     [0,1,1,1,1,1,1,1,1,1],
+                    [0,0,0,0,0,0,0,0,0,0]
+                ])
+            },
+            'lucky_cat': {
+                colors: ['#FFFFFF', '#1E293B', '#FEF08A', '#FACC15', '#EF4444', '#22C55E', '#F472B6', '#38BDF8'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,1,1,1,0,0,0,0],
+                    [0,0,1,4,4,4,1,0,0,0],
+                    [0,0,1,4,6,4,1,1,1,1],
+                    [0,0,1,4,6,6,2,2,2,2],
+                    [0,0,1,2,2,2,2,2,2,2],
+                    [0,1,2,2,1,1,2,2,2,2],
+                    [0,1,2,2,1,7,2,2,4,4],
+                    [0,1,2,6,2,2,2,2,2,2],
+                    [0,0,1,2,2,2,2,1,1,2],
+                    [0,0,0,1,4,4,4,4,4,4],
+                    [0,0,1,5,5,5,5,3,3,3],
+                    [0,1,2,2,5,5,3,3,4,3],
+                    [0,1,2,2,2,2,2,3,3,3],
+                    [0,1,2,2,1,2,2,2,2,2],
+                    [0,0,1,1,1,2,2,2,6,6],
+                    [0,0,0,1,2,2,2,6,6,6],
+                    [0,0,0,1,3,3,1,2,2,2],
+                    [0,0,0,1,1,1,1,1,1,1],
+                    [0,0,0,0,0,0,0,0,0,0]
+                ])
+            },
+            'lotus': {
+                colors: ['#FFFFFF', '#1E293B', '#EC4899', '#F472B6', '#FBCFE8', '#FACC15', '#22C55E', '#15803D'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,0,0,1],
+                    [0,0,0,0,0,0,0,0,1,2],
+                    [0,0,0,0,0,0,0,1,2,3],
+                    [0,0,0,0,0,1,1,1,3,4],
+                    [0,0,0,0,1,2,2,1,3,4],
+                    [0,0,1,1,1,2,3,1,3,4],
+                    [0,1,2,2,1,3,4,1,4,4],
+                    [0,1,2,3,1,3,4,1,5,5],
+                    [1,2,3,3,1,4,4,1,5,5],
+                    [1,2,3,4,1,4,5,5,5,5],
+                    [0,1,3,4,4,1,5,5,5,5],
+                    [0,0,1,4,4,4,1,1,1,1],
+                    [0,1,6,1,1,1,6,6,6,6],
+                    [1,6,6,6,7,7,6,6,7,7],
+                    [0,1,6,7,7,7,7,7,7,7],
+                    [0,0,1,1,1,1,1,1,1,1],
+                    [0,0,0,0,0,0,0,0,1,7],
+                    [0,0,0,0,0,0,0,0,1,7],
+                    [0,0,0,0,0,0,0,0,1,7],
                     [0,0,0,0,0,0,0,0,0,0]
                 ])
             },
@@ -825,6 +1511,56 @@
                     [0,0,0,0,0,0,0,1,1,0]
                 ])
             },
+            'panda': {
+                colors: ['#FFFFFF', '#1E293B', '#334155', '#E2E8F0', '#F472B6', '#22C55E', '#15803D', '#FACC15', '#EF4444'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,1,1,1,1,0,0,0,0],
+                    [0,1,2,2,2,2,1,0,0,0],
+                    [0,1,2,8,8,2,1,1,1,1],
+                    [0,1,2,2,2,1,3,3,3,3],
+                    [0,0,1,1,1,3,3,3,3,3],
+                    [0,0,1,3,3,1,1,1,3,3],
+                    [0,0,1,3,1,2,1,2,1,3],
+                    [0,0,1,3,1,2,2,2,1,1],
+                    [0,0,1,3,4,4,3,3,3,1],
+                    [0,0,0,1,3,3,3,1,1,3],
+                    [0,0,1,2,1,1,1,8,8,8],
+                    [0,1,2,2,2,1,3,3,7,7],
+                    [0,1,2,2,2,1,5,5,6,6],
+                    [0,1,2,2,1,3,5,6,3,3],
+                    [0,0,1,1,1,3,3,3,3,3],
+                    [0,0,0,1,2,2,2,1,1,1],
+                    [0,0,0,1,2,4,2,1,0,0],
+                    [0,0,0,0,1,1,1,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0]
+                ])
+            },
+            'castle': {
+                colors: ['#FFFFFF', '#1E293B', '#EF4444', '#38BDF8', '#1D4ED8', '#FACC15', '#E2E8F0', '#94A3B8', '#A855F7'],
+                data: createSymmetricalGrid([
+                    [0,0,0,1,2,0,0,0,0,1],
+                    [0,0,0,1,2,2,0,0,1,8],
+                    [0,0,0,1,0,0,0,1,8,8],
+                    [0,0,1,4,1,0,0,1,1,1],
+                    [0,1,4,4,4,1,0,1,6,6],
+                    [0,1,1,1,1,1,0,1,6,5],
+                    [0,0,1,6,6,1,0,1,6,5],
+                    [0,0,1,6,5,1,1,1,7,7],
+                    [0,0,1,6,6,1,4,4,4,4],
+                    [0,1,1,1,1,1,1,1,1,1],
+                    [0,1,7,1,7,1,7,1,7,1],
+                    [0,1,7,7,7,7,7,7,7,7],
+                    [0,1,6,6,3,3,6,6,6,6],
+                    [0,1,6,6,3,3,6,1,1,1],
+                    [0,1,7,7,1,1,7,1,5,5],
+                    [0,1,6,6,6,6,6,1,2,5],
+                    [0,1,6,6,6,6,6,1,2,2],
+                    [0,1,7,7,7,7,7,1,2,2],
+                    [1,1,1,1,1,1,1,1,1,1],
+                    [0,0,0,0,0,0,0,0,0,0]
+                ])
+            },
 
             // ================= MỨC 10 CÂU (10 MÀU) =================
             'astronaut': {
@@ -926,17 +1662,334 @@
                     [0,0,0,0,0,0,0,0,0,1],
                     [0,0,0,0,0,0,0,0,0,0]
                 ])
+            },
+            'lion': {
+                colors: ['#FFFFFF', '#1E293B', '#78350F', '#B45309', '#EA580C', '#F97316', '#FACC15', '#FEF08A', '#EF4444', '#38BDF8', '#22C55E'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,1,1,1],
+                    [0,0,0,0,1,1,1,8,9,6],
+                    [0,0,1,1,2,2,3,1,1,1],
+                    [0,1,2,4,4,3,3,3,4,4],
+                    [0,1,2,4,7,4,3,6,6,6],
+                    [1,2,3,4,4,6,6,6,6,6],
+                    [1,2,3,6,6,1,1,6,6,6],
+                    [1,2,4,6,6,1,9,6,6,7],
+                    [1,2,4,6,8,8,6,6,7,1],
+                    [1,2,3,6,6,6,6,7,1,1],
+                    [0,1,2,3,6,6,7,7,7,2],
+                    [0,1,2,2,3,1,1,8,8,1],
+                    [0,0,1,2,2,3,3,1,1,3],
+                    [0,0,0,1,2,2,4,4,4,4],
+                    [0,0,0,1,5,5,6,6,7,7],
+                    [0,0,1,5,5,6,6,1,7,7],
+                    [0,0,1,5,5,6,6,1,6,6],
+                    [0,0,1,10,10,5,5,1,5,5],
+                    [0,1,10,10,1,1,1,1,1,1],
+                    [0,0,0,0,0,0,0,0,0,0]
+                ])
+            },
+            'phoenix': {
+                colors: ['#FFFFFF', '#1E293B', '#991B1B', '#EF4444', '#F97316', '#FACC15', '#FEF08A', '#A855F7', '#EC4899', '#06B6D4', '#10B981'],
+                data: createSymmetricalGrid([
+                    [0,0,0,0,0,0,0,1,5,1],
+                    [0,0,1,0,0,0,0,1,6,5],
+                    [0,1,3,1,0,0,0,0,1,4],
+                    [1,2,3,4,1,0,0,1,3,4],
+                    [1,2,3,4,5,1,0,1,3,9],
+                    [1,2,4,5,5,4,1,1,4,5],
+                    [0,1,3,4,5,6,4,1,4,6],
+                    [0,1,2,3,4,5,6,3,3,6],
+                    [0,0,1,2,3,4,5,3,8,8],
+                    [0,0,1,2,2,3,4,8,7,7],
+                    [0,0,0,1,2,2,3,8,7,6],
+                    [0,0,0,0,1,1,1,3,4,5],
+                    [0,0,0,0,0,1,9,1,3,4],
+                    [0,0,0,0,1,9,10,1,2,3],
+                    [0,0,0,1,9,10,1,0,1,2],
+                    [0,0,0,1,10,1,0,0,1,3],
+                    [0,0,1,5,1,0,0,0,1,4],
+                    [0,0,1,6,1,0,0,0,1,5],
+                    [0,0,0,1,0,0,0,0,0,1],
+                    [0,0,0,0,0,0,0,0,0,0]
+                ])
             }
         };
 
-        function showToast(msg, isError=false) {
+        function getTopicsList() {
+            const set = new Set();
+            questions.forEach(q => {
+                if (q.topic && q.topic.trim()) set.add(q.topic.trim());
+            });
+            return Array.from(set);
+        }
+
+        function updateTopicSelectors() {
+            const topics = getTopicsList();
+            const filterEl = document.getElementById('topic-filter');
+            const datalistEl = document.getElementById('topic-suggestions');
+            if (!filterEl || !datalistEl) return;
+
+            const prevVal = currentTopicFilter;
+            filterEl.innerHTML = `<option value="ALL">-- Tất cả bài học (${questions.length} câu) --</option>`;
+            datalistEl.innerHTML = '';
+
+            // Phân nhóm theo Khối 10, Khối 11, Khối 12 và Khác
+            const groups = {
+                "🧪 HÓA HỌC LỚP 10 (GDPT 2018)": [],
+                "⚗️ HÓA HỌC LỚP 11 (GDPT 2018)": [],
+                "🔬 HÓA HỌC LỚP 12 (GDPT 2018)": [],
+                "📚 CHỦ ĐỀ KHÁC": []
+            };
+
+            topics.forEach(t => {
+                datalistEl.innerHTML += `<option value="${t}">`;
+                if (t.startsWith("Lớp 10")) groups["🧪 HÓA HỌC LỚP 10 (GDPT 2018)"].push(t);
+                else if (t.startsWith("Lớp 11")) groups["⚗️ HÓA HỌC LỚP 11 (GDPT 2018)"].push(t);
+                else if (t.startsWith("Lớp 12")) groups["🔬 HÓA HỌC LỚP 12 (GDPT 2018)"].push(t);
+                else groups["📚 CHỦ ĐỀ KHÁC"].push(t);
+            });
+
+            Object.keys(groups).forEach(groupLabel => {
+                if (groups[groupLabel].length > 0) {
+                    let optGroupHtml = `<optgroup label="${groupLabel}">`;
+                    groups[groupLabel].forEach(t => {
+                        const count = questions.filter(q => (q.topic || '').trim() === t).length;
+                        optGroupHtml += `<option value="${t}">${t} (${count} câu)</option>`;
+                    });
+                    optGroupHtml += `</optgroup>`;
+                    filterEl.innerHTML += optGroupHtml;
+                }
+            });
+
+            if (prevVal !== 'ALL' && topics.includes(prevVal)) {
+                filterEl.value = prevVal;
+            } else {
+                currentTopicFilter = 'ALL';
+                filterEl.value = 'ALL';
+            }
+        }
+
+        function onTopicFilterChange(val) {
+            currentTopicFilter = val;
+            if (val !== 'ALL') {
+                document.getElementById('lesson-title').value = val.toUpperCase();
+                document.getElementById('q-topic').value = val;
+            }
+            gameConfig.colorsUsed = []; // Reset để bốc lại câu hỏi theo bài lọc mới
+            renderQuestions();
+            updatePaletteStatus();
+        }
+
+        function getFilteredQuestions() {
+            if (currentTopicFilter === 'ALL') return questions;
+            return questions.filter(q => (q.topic || '').trim() === currentTopicFilter);
+        }
+
+        function renderQuestions() {
+            updateTopicSelectors();
+            const list = document.getElementById('questions-list');
+            const filtered = getFilteredQuestions();
+            document.getElementById('q-count').innerText = filtered.length;
+            list.innerHTML = '';
+            if (filtered.length === 0) {
+                list.innerHTML = `<div class="text-center text-slate-400 py-10 font-bold">Chưa có câu hỏi nào trong mục này.</div>`;
+                return;
+            }
+
+            filtered.forEach((q, index) => {
+                const optsHtml = q.options.map((opt, i) => 
+                    `<div class="px-2.5 py-1.5 ${i == q.correct ? 'bg-green-100 text-green-800 border-green-300' : 'bg-slate-50 text-slate-700 border-slate-200'} border rounded-lg font-bold text-sm">${formatChem(opt)}</div>`
+                ).join('');
+
+                const imgHtml = q.image ? `<img src="${q.image}" alt="Hình minh họa" class="h-14 object-contain rounded-lg border border-slate-200 bg-white p-1 ml-3 flex-shrink-0">` : '';
+
+                list.innerHTML += `
+                    <div class="p-4 border-2 border-slate-100 rounded-xl hover:border-blue-200 bg-white transition-all group">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex items-start flex-1">
+                                <div class="flex-1">
+                                    <span class="inline-block text-[11px] font-black uppercase px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md mb-1 border border-blue-100">${q.topic || 'Chung'}</span>
+                                    <h4 class="font-black text-slate-800 text-sm">Câu ${index + 1}: <span class="font-bold text-slate-700">${formatChem(q.text)}</span></h4>
+                                </div>
+                                ${imgHtml}
+                            </div>
+                            <div class="flex gap-1.5 ml-2">
+                                <button onclick="editQuestion(${q.id})" class="text-blue-500 hover:text-blue-700 bg-blue-50 p-1.5 rounded-lg" title="Sửa câu hỏi"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteQuestion(${q.id})" class="text-red-500 hover:text-red-700 bg-red-50 p-1.5 rounded-lg" title="Xóa câu hỏi"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mt-2">${optsHtml}</div>
+                    </div>`;
+            });
+        }
+
+        function saveQuestion() {
+            const idInput = document.getElementById('edit-id').value;
+            const topic = document.getElementById('q-topic').value.trim() || "Bài tập chung";
+            const text = document.getElementById('q-text').value.trim();
+            const opts = [
+                document.getElementById('q-opt0').value.trim(),
+                document.getElementById('q-opt1').value.trim(),
+                document.getElementById('q-opt2').value.trim(),
+                document.getElementById('q-opt3').value.trim()
+            ];
+            const correct = parseInt(document.getElementById('q-correct').value);
+
+            if(!text || opts.includes("")) { showToast("Vui lòng điền đủ câu hỏi và 4 đáp án!", true); return; }
+
+            const newQ = {
+                id: idInput == "-1" ? Date.now() : parseInt(idInput),
+                topic,
+                text,
+                options: opts,
+                correct,
+                image: currentQuestionImage || ""
+            };
+            if (idInput == "-1") {
+                questions.push(newQ);
+                currentTopicFilter = topic;
+                showToast("Đã thêm câu hỏi vào ngân hàng!");
+            } else {
+                const idx = questions.findIndex(q => q.id === newQ.id);
+                if(idx !== -1) questions[idx] = newQ;
+                showToast("Cập nhật câu hỏi thành công!");
+            }
+            gameConfig.colorsUsed = [];
+            resetForm();
+            renderQuestions();
+            updatePaletteStatus();
+        }
+
+        function editQuestion(id) {
+            const q = questions.find(q => q.id === id); if(!q) return;
+            document.getElementById('edit-id').value = q.id;
+            document.getElementById('q-topic').value = q.topic || "Bài tập chung";
+            document.getElementById('q-text').value = q.text;
+            document.getElementById('q-opt0').value = q.options[0];
+            document.getElementById('q-opt1').value = q.options[1];
+            document.getElementById('q-opt2').value = q.options[2];
+            document.getElementById('q-opt3').value = q.options[3];
+            document.getElementById('q-correct').value = q.correct;
+            currentQuestionImage = q.image || "";
+            showQuestionImagePreview(currentQuestionImage);
+            updateLiveChemPreview();
+        }
+
+        function deleteQuestion(id) {
+            questions = questions.filter(q => q.id !== id);
+            gameConfig.colorsUsed = [];
+            renderQuestions();
+            updatePaletteStatus();
+            showToast("Đã xóa câu hỏi!");
+        }
+
+        function resetForm() {
+            document.getElementById('edit-id').value = "-1";
+            document.getElementById('q-text').value = "";
+            [0,1,2,3].forEach(i => document.getElementById(`q-opt${i}`).value = "");
+            document.getElementById('q-correct').value = "0";
+            clearQuestionImage();
+            updateLiveChemPreview();
+        }
+
+        function exportQuestionsJSON() {
+            const dataStr = JSON.stringify(questions, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ngan_hang_cau_hoi_ma_tran_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast("Đã xuất file JSON ngân hàng câu hỏi!");
+        }
+
+        function downloadSampleJSON() {
+            const sample = [
+                {
+                    "topic": "Bài 2. Carbohydrate",
+                    "text": "Chất nào sau đây thuộc loại monosaccharide?",
+                    "options": ["Glucose", "Saccharose", "Tinh bột", "Cellulose"],
+                    "correct": 0
+                },
+                {
+                    "topic": "Bài 2. Carbohydrate",
+                    "text": "Thuốc thử dùng để nhận biết hồ tinh bột là:",
+                    "options": ["Dung dịch I2", "Cu(OH)2", "AgNO3/NH3", "Quỳ tím"],
+                    "correct": 0
+                }
+            ];
+            const blob = new Blob([JSON.stringify(sample, null, 2)], { type: "application/json;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "mau_nhap_cau_hoi.json";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast("Đã tải file JSON mẫu!");
+        }
+
+        function importQuestionsJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (!Array.isArray(imported)) throw new Error("File JSON phải là một mảng danh sách câu hỏi.");
+                    let addedCount = 0;
+                    let lastTopic = "";
+                    imported.forEach((item, idx) => {
+                        if (item.text && Array.isArray(item.options) && item.options.length >= 4) {
+                            const topicName = (item.topic || item.lesson || document.getElementById('lesson-title').value || "Bài mới nhập").trim();
+                            lastTopic = topicName;
+                            questions.push({
+                                id: Date.now() + idx + Math.floor(Math.random() * 10000),
+                                topic: topicName,
+                                text: item.text.trim(),
+                                options: item.options.slice(0, 4).map(String),
+                                correct: typeof item.correct === 'number' ? item.correct : 0,
+                                image: item.image || ""
+                            });
+                            addedCount++;
+                        }
+                    });
+                    if (addedCount > 0) {
+                        if (lastTopic) {
+                            currentTopicFilter = lastTopic;
+                            document.getElementById('lesson-title').value = lastTopic.toUpperCase();
+                        }
+                        gameConfig.colorsUsed = [];
+                        renderQuestions();
+                        updatePaletteStatus();
+                        showToast(`Đã nhập thành công ${addedCount} câu hỏi từ JSON!`);
+                    } else {
+                        showToast("Không tìm thấy câu hỏi hợp lệ trong file JSON!", true);
+                    }
+                } catch (err) {
+                    showToast("Lỗi đọc file JSON: " + err.message, true);
+                }
+                event.target.value = "";
+            };
+            reader.readAsText(file);
+        }
+
+        function showToast(msg, isError = false) {
             const container = document.getElementById('toast-container');
-            const t = document.createElement('div');
-            t.className = `toast ${isError ? 'error' : ''}`;
-            t.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-2"></i> ${msg}`;
-            container.appendChild(t);
-            setTimeout(() => t.classList.add('show'), 10);
-            setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3000);
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = `toast ${isError ? 'error' : ''}`;
+            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-2"></i>${msg}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
         function shuffleArray(array) {
@@ -990,65 +2043,7 @@
             }
         }
 
-        // --- STREAMING_CHUNK: Quản lý Câu Hỏi ---
-        function renderQuestions() {
-            const list = document.getElementById('questions-list');
-            document.getElementById('q-count').innerText = questions.length;
-            list.innerHTML = '';
-            if (questions.length === 0) { list.innerHTML = `<div class="text-center text-slate-400 py-10 font-bold">Chưa có câu hỏi nào.</div>`; return; }
-
-            questions.forEach((q, index) => {
-                const optsHtml = q.options.map((opt, i) => 
-                    `<div class="px-2 py-1 ${i == q.correct ? 'bg-green-100 text-green-700 border-green-200' : 'bg-slate-50 text-slate-600 border-slate-200'} border rounded-md font-semibold text-sm">${opt}</div>`
-                ).join('');
-
-                list.innerHTML += `
-                    <div class="p-4 border-2 border-slate-100 rounded-xl hover:border-blue-200 bg-white transition-all group">
-                        <div class="flex justify-between items-start mb-2">
-                            <h4 class="font-black text-slate-800 text-sm">Câu ${index + 1}: <span class="font-bold text-slate-600">${q.text}</span></h4>
-                            <div class="flex gap-2">
-                                <button onclick="editQuestion(${q.id})" class="text-blue-500 hover:text-blue-700 bg-blue-50 p-1.5 rounded-lg"><i class="fas fa-edit"></i></button>
-                                <button onclick="deleteQuestion(${q.id})" class="text-red-500 hover:text-red-700 bg-red-50 p-1.5 rounded-lg"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 mt-2">${optsHtml}</div>
-                    </div>`;
-            });
-        }
-
-        function saveQuestion() {
-            const idInput = document.getElementById('edit-id').value;
-            const text = document.getElementById('q-text').value.trim();
-            const opts = [
-                document.getElementById('q-opt0').value.trim(),
-                document.getElementById('q-opt1').value.trim(),
-                document.getElementById('q-opt2').value.trim(),
-                document.getElementById('q-opt3').value.trim()
-            ];
-            const correct = parseInt(document.getElementById('q-correct').value);
-
-            if(!text || opts.includes("")) { showToast("Vui lòng điền đủ câu hỏi và 4 đáp án!", true); return; }
-
-            const newQ = { id: idInput == "-1" ? Date.now() : parseInt(idInput), text, options: opts, correct };
-            if (idInput == "-1") { questions.push(newQ); showToast("Đã thêm câu hỏi!"); } 
-            else { const idx = questions.findIndex(q => q.id === newQ.id); if(idx !== -1) questions[idx] = newQ; showToast("Cập nhật thành công!"); }
-            resetForm(); renderQuestions();
-        }
-
-        function editQuestion(id) {
-            const q = questions.find(q => q.id === id); if(!q) return;
-            document.getElementById('edit-id').value = q.id; document.getElementById('q-text').value = q.text;
-            document.getElementById('q-opt0').value = q.options[0]; document.getElementById('q-opt1').value = q.options[1];
-            document.getElementById('q-opt2').value = q.options[2]; document.getElementById('q-opt3').value = q.options[3];
-            document.getElementById('q-correct').value = q.correct;
-        }
-        function deleteQuestion(id) {
-            questions = questions.filter(q => q.id !== id);
-            renderQuestions();
-            showToast("Đã xóa câu hỏi!");
-        }
-        function resetForm() { document.getElementById('edit-id').value = "-1"; document.getElementById('q-text').value = ""; [0,1,2,3].forEach(i => document.getElementById(`q-opt${i}`).value = ""); document.getElementById('q-correct').value = "0"; }
-
+        // --- STREAMING_CHUNK: Quản lý Lưới & Bảng màu ---
         function getActiveColors() {
             const used = new Set();
             gridData.forEach(c => { const upperC = c.toUpperCase(); if (upperC !== '#FFFFFF' && upperC !== '#FFF') used.add(upperC); });
@@ -1130,45 +2125,57 @@
 
         function updatePaletteStatus() {
             const used = getActiveColors();
+            const availableQ = getFilteredQuestions().length;
             const el = document.getElementById('color-count');
-            el.innerText = used.length;
-            el.className = used.length > questions.length ? "text-red-500 font-black text-base" : "text-green-600 font-black text-base";
+            if (!el) return;
+            el.innerText = `${used.length} màu / ${availableQ} câu`;
+            el.className = used.length > availableQ ? "text-red-500 font-black text-sm" : "text-green-600 font-black text-sm";
         }
 
-        // --- STREAMING_CHUNK: Logic Mật Mã & Trải nghiệm Game ---
+        // --- STREAMING_CHUNK: Logic Mật Mã, Bốc Ngẫu Nhiên Câu Hỏi & Xuất PDF ---
         function prepareGameMode() {
             const activeColors = getActiveColors();
-            if (activeColors.length === 0 || activeColors.length > questions.length) {
+            const availablePool = getFilteredQuestions();
+            if (activeColors.length === 0 || activeColors.length > availablePool.length) {
                 document.getElementById('play-warning').classList.remove('hidden');
                 document.getElementById('play-content').classList.add('hidden');
-                let msg = activeColors.length === 0 ? "Bức tranh đang trống, hãy vẽ gì đó!" : `Bức tranh dùng ${activeColors.length} màu, nhưng bạn chỉ có ${questions.length} câu hỏi. Hãy thêm câu hỏi hoặc giảm bớt màu.`;
+                let msg = activeColors.length === 0 
+                    ? "Bức tranh đang trống, hãy vẽ hoặc chọn mẫu tranh trước!" 
+                    : `Bức tranh dùng ${activeColors.length} màu, nhưng chủ đề đang lọc chỉ có ${availablePool.length} câu hỏi. Hãy thêm câu hỏi, nhập JSON hoặc đổi bộ lọc sang "Tất cả bài học".`;
                 document.getElementById('play-warning-msg').innerText = msg;
                 return;
             }
             
             document.getElementById('play-warning').classList.add('hidden');
             document.getElementById('play-content').classList.remove('hidden');
+            document.getElementById('active-q-count-badge').innerText = `${activeColors.length}/${availablePool.length}`;
             
             // Cập nhật Tiêu đề bài học
             const title = document.getElementById('lesson-title').value.trim() || 'BÀI TẬP MA TRẬN TÔ MÀU';
             document.getElementById('web-lesson-title').innerText = title.toUpperCase();
-            document.getElementById('print-lesson-title').innerHTML = `<span>${title.toUpperCase()}</span><span style="font-size: 12px; font-weight: 700; color: #3b82f6; background: #fff; padding: 2px 8px; border-radius: 20px; border: 1px solid #bfdbfe;">0/${questions.length} đúng</span>`;
+            document.getElementById('print-lesson-title').innerHTML = `<span>${title.toUpperCase()}</span><span style="font-size: 12px; font-weight: 800; color: #1d4ed8; background: #fff; padding: 3px 10px; border-radius: 20px; border: 1px solid #93c5fd;">0/${activeColors.length} ĐÚNG</span>`;
             
             // Tạo data nếu chưa có
             if(gameConfig.colorsUsed.length !== activeColors.length) {
-                generateGameData();
+                generateGameData(false);
             } else {
                 renderWebPlay();
                 renderPrintView();
             }
         }
 
-        function generateGameData() {
+        function generateGameData(showNotification = true) {
             const activeColors = getActiveColors();
+            const availablePool = getFilteredQuestions();
+            if (activeColors.length === 0 || activeColors.length > availablePool.length) return;
+
             gameConfig.colorsUsed = activeColors;
             gameConfig.colorToQuestionMap = {};
             gameConfig.questionData = [];
             gameConfig.studentAnswers = {};
+
+            // Lấy ngẫu nhiên N câu hỏi từ ngân hàng câu hỏi đang lọc
+            const sampledQuestions = shuffleArray([...availablePool]).slice(0, activeColors.length);
 
             const pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
             shuffleArray(pool);
@@ -1182,7 +2189,7 @@
                 const colorHex = activeColors[i];
                 gameConfig.colorToQuestionMap[colorHex] = i; 
                 
-                const q = questions[i];
+                const q = sampledQuestions[i];
                 const correctLetter = correctLetters[i];
                 const wrongLetters = shuffleArray([...distractorPool]).slice(0, 3);
                 let wrongIdx = 0;
@@ -1197,6 +2204,7 @@
                 gameConfig.questionData.push({
                     qIndex: i,
                     originalQId: q.id,
+                    questionObj: q,
                     color: colorHex,
                     correctLetter: correctLetter,
                     options: opts
@@ -1208,18 +2216,16 @@
             for (let i = 0; i < 400; i++) {
                 const cellColor = gridData[i].toUpperCase();
                 if (cellColor !== '#FFFFFF' && cellColor !== '#FFF') {
-                    // Ô này có màu -> chứa chữ cái của đáp án đúng
                     const qIdx = gameConfig.colorToQuestionMap[cellColor];
                     gameConfig.letterGrid[i] = gameConfig.questionData[qIdx].correctLetter;
                 } else {
-                    // Ô nền trắng -> chứa chữ cái nhiễu ngẫu nhiên
                     gameConfig.letterGrid[i] = distractorPool[Math.floor(Math.random() * distractorPool.length)];
                 }
             }
 
             renderWebPlay();
             renderPrintView();
-            showToast("Đã tạo mật mã ngẫu nhiên mới!");
+            if (showNotification) showToast("Đã bốc ngẫu nhiên câu hỏi & trộn mã mới!");
         }
 
         // --- RENDER WEB PLAY ---
@@ -1268,7 +2274,7 @@
             
             // Render đủ số lượng câu hỏi tương ứng với số màu
             gameConfig.questionData.forEach((qd, index) => {
-                const qOriginal = questions[qd.qIndex];
+                const qOriginal = qd.questionObj;
                 
                 const optsHtml = qd.options.map(opt => {
                     const ansData = gameConfig.studentAnswers[index];
@@ -1276,15 +2282,20 @@
                     return `
                         <div onclick="selectAnswer(${index}, '${opt.letter}')" class="opt-btn ${isSelected ? 'selected' : ''}">
                             <span class="letter-badge">${opt.letter}</span>
-                            <span>${opt.text}</span>
+                            <span>${formatChem(opt.text)}</span>
                         </div>
                     `;
                 }).join('');
 
+                const webImgHtml = qOriginal.image
+                    ? `<div class="my-2 flex justify-center"><img src="${qOriginal.image}" alt="Minh họa" class="max-h-28 object-contain rounded-xl border border-slate-200 bg-white p-1.5 shadow-sm"></div>`
+                    : '';
+
                 qListEl.innerHTML += `
                     <div class="mb-6 p-5 border-2 border-slate-100 rounded-2xl bg-slate-50">
                         <div class="mb-3">
-                            <h4 class="font-black text-slate-800 text-base">Câu ${index + 1}: ${qOriginal.text}</h4>
+                            <h4 class="font-black text-slate-800 text-base">Câu ${index + 1}: ${formatChem(qOriginal.text)}</h4>
+                            ${webImgHtml}
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${optsHtml}</div>
                     </div>
@@ -1326,23 +2337,32 @@
                 </div>
             `).join('');
 
-            // Câu hỏi In (Nếu > 5 câu hỏi thì tự động dàn 2 cột để vừa khít 1 mặt giấy A4)
+            // Câu hỏi In: Tự động giãn đều phủ kín cột phải
+            const totalQ = gameConfig.questionData.length;
             const printListEl = document.getElementById('print-questions-list');
             printListEl.innerHTML = '';
-            printListEl.className = gameConfig.questionData.length > 5 ? '' : 'single-col';
+            const isTwoCol = totalQ > 5;
+            printListEl.className = isTwoCol ? '' : 'single-col';
             
             gameConfig.questionData.forEach((qd, index) => {
-                const qOriginal = questions[qd.qIndex];
+                const qOriginal = qd.questionObj;
                 const optsHtml = qd.options.map(opt => `
                     <div class="print-opt">
                         <span class="print-letter">${opt.letter}</span>
-                        <span>${opt.text}</span>
+                        <span>${formatChem(opt.text)}</span>
                     </div>
                 `).join('');
 
+                // Nếu chia 2 cột mà số lượng câu hỏi lẻ (VD: 7 câu), câu cuối sẽ trải ngang 2 cột cho kín đẹp
+                const isLastOdd = isTwoCol && (totalQ % 2 === 1) && (index === totalQ - 1);
+                const printImgHtml = qOriginal.image ? `<img src="${qOriginal.image}" class="print-q-img" alt="Hình">` : '';
+
                 printListEl.innerHTML += `
-                    <div class="print-q-box">
-                        <div class="print-q-text">Câu ${index + 1}. ${qOriginal.text}</div>
+                    <div class="print-q-box ${isLastOdd ? 'span-full' : ''}">
+                        <div class="print-q-header">
+                            <div class="print-q-text">Câu ${index + 1}. ${formatChem(qOriginal.text)}</div>
+                            ${printImgHtml}
+                        </div>
                         <div class="print-opt-row">${optsHtml}</div>
                     </div>
                 `;
@@ -1350,12 +2370,18 @@
         }
 
         function printWorksheet() {
+            // Ẩn toàn bộ thông báo nổi trước khi mở hộp thoại In
+            document.getElementById('toast-container').innerHTML = '';
             renderPrintView();
-            setTimeout(() => { window.print(); }, 150);
+            setTimeout(() => { window.print(); }, 100);
         }
 
         // --- Khởi tạo ---
-        window.onload = () => { renderQuestions(); loadPreset('butterfly'); };
+        window.onload = () => {
+            document.getElementById('lesson-title').value = currentTopicFilter.toUpperCase();
+            renderQuestions();
+            loadPreset('astronaut');
+        };
     </script>
 </body>
 </html>
